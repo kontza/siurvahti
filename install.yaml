@@ -1,0 +1,6 @@
+---
+- name: Setup Podman
+  hosts: target
+  roles:
+    - podman
+    - pihole

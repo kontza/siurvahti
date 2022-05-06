@@ -1,0 +1,2 @@
+#!/bin/sh
+ansible-playbook ./install.yaml --ask-vault-pass $@

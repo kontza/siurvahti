@@ -1,0 +1,4 @@
+pihole:
+    user: pihole
+    home: /opt/pihole
+    webpassword: "{{vault_pihole_webpassword}}"

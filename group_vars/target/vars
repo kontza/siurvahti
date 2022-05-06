@@ -1,4 +1,5 @@
 pihole:
     user: pihole
+    group: pihole
     home: /opt/pihole
     webpassword: "{{vault_pihole_webpassword}}"

@@ -1,0 +1,15 @@
+---
+- name: Install UFW
+  ansible.builtin.package:
+    name: ufw
+    state: present
+
+- name: Allow SSH
+  community.general.ufw:
+    rule: limit
+    port: ssh
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+    logging: on

@@ -47,10 +47,10 @@
     state: present
     recreate: yes
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "67:67/udp"
-      - "80:80/tcp"
+      - "10053:53/tcp"
+      - "10053:53/udp"
+      - "10067:67/udp"
+      - "10080:80/tcp"
     env:
       TZ: "Europe/Helsinki"
       WEBPASSWORD: "{{pihole.webpassword}}"

@@ -5,16 +5,11 @@
     name: podman
     state: latest
     update_cache: yes
-  tags:
-    - podman
 
-- name: Ensure quay.io and docker.io are included in search
+- name: Ensure docker.io is included in image search
   become: yes
   ansible.builtin.blockinfile:
     path: /etc/containers/registries.conf
     block: |
       [registries.search]
       registries = ['docker.io']
-    # registries = ['quay.io', 'docker.io']
-  tags:
-    - podman

@@ -62,14 +62,10 @@
     generate_systemd:
       path: "{{pihole.home}}/systemd"
   register: creation_result
-  tags:
-    - pihole
 
 - name: Extract created systemd unit file's name
   ansible.builtin.set_fact:
     unit_file: "{{(creation_result['podman_systemd'].keys()|list)[0]}}"
-  tags:
-    - pihole
 
 - name: Ensure the systemd unit file is rootless
   become: yes
@@ -80,12 +76,8 @@
     block: |
       User={{pihole.user}}
       Group={{pihole.group}}
-  tags:
-    - pihole
 
 - name: Disable lingering for {{pihole.user}}
   become: yes
   ansible.builtin.command:
     cmd: loginctl disable-linger {{pihole.user}}
-  tags:
-    - pihole

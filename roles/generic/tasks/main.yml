@@ -1,0 +1,25 @@
+---
+- name: Ensure en_GB.UTF-8 locale exists
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/locale.gen
+    line: en_GB.UTF-8
+    create: yes
+    state: present
+
+- name: Generate locales
+  become: yes
+  ansible.builtin.command:
+    cmd: "{{item}}"
+  loop:
+    - locale-gen en_GB.UTF-8
+    - update-locale LANG=en_GB.UTF-8
+
+- name: Install packages
+  become: yes
+  ansible.builtin.package:
+    name: "{{item}}"
+    state: present
+  loop:
+    - locales
+    - python3-pip

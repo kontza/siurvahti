@@ -1,2 +1,6 @@
 #!/bin/sh
-ansible-playbook ./install.yaml --ask-vault-pass $@
+ansible-playbook \
+    --become-password-file ./scripts/become-pass \
+    --vault-password-file ./scripts/vault-pass \
+    ./install.yaml \
+    $@

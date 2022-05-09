@@ -1,2 +1,5 @@
-[target]
-siurvahti ansible_user=juruotsa
+target:
+  hosts:
+    siurvahti:
+      ansible_user: juruotsa
+      net_if: enx00a0c6000000

@@ -22,7 +22,7 @@
   tags:
     - pihole
 
-- name: Install ACL in preparation for the next task
+- name: Install ACL in preparation for the next task (enable lingering)
   become: yes
   ansible.builtin.package:
     name: acl

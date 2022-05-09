@@ -2,8 +2,11 @@
 # This file is a placeholder for est-tags: tasks that are
 # meant to be run with '-test'.
 
-- name: Inventory file
+- name: Inventory vars
   ansible.builtin.debug:
-    var: inventory_file|basename
+    var: item
   tags:
     - never
+  loop:
+    - "{{inventory_file|basename}}"
+    - "{{inventory_hostname}}"

@@ -5,20 +5,5 @@
 # Handling an OVA
 Just import the OVA-file into VMware. During the import process you can specify the default user's password.
 
-# TODO
-Add a firewall rule to route traffic from privileged ports to unprivileged ones.
-```
-- name: Redirect DNS, DHCP, HTTP and HTTPS to pihole
-    ansible.posix.firewalld:
-    rich_rule: "{{ item }}"
-    zone: public
-    permanent: true
-    immediate: true
-    state: "{{ firewall_state }}"
-    loop:
-    - rule family=ipv4 forward-port port=53 protocol=tcp to-port=1153
-    - rule family=ipv4 forward-port port=53 protocol=udp to-port=1153
-    - rule family=ipv4 forward-port port=67 protocol=udp to-port=1167
-    - rule family=ipv4 forward-port port=80 protocol=tcp to-port=1180
-    - rule family=ipv4 forward-port port=443 protocol=tcp to-port=1443
-```
+# A Hindsight Note About Redirection
+Remember that short hostname on a fresh Ubuntu install may point to `127.0.1.1`. This tripped me propertly when I tried to validate my rules. I have a simple TCP-listener app (github.com/kontza/ideal-doodle), that I used to spring up a listener `$ ./ideal-doodle -a shorthostname:10080`. Then I tried `$ echo -n (date)|nc shorthostname:10080`. And wondered why it doesn't work. Then I tried the simple HTTP server from Python3: `$ python3 -mhttp.server --bind shorthostname 10080`, and then I noticed that the full address the server was listening to was `127.0.1.1:10080`. Once that came up, I understood why my rules weren't triggering, and how to remedy that.

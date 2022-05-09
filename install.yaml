@@ -6,12 +6,13 @@
       tags: est
     - role: generic
       tags: generic
+      become: yes
     - role: podman
       tags: podman
     - role: systemd-resolved
       tags: systemd-resolved
-    - role: ufw
-      tags: ufw
+    - role: nft
+      tags: nft
       become: yes
     - role: pihole
       tags: pihole

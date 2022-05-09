@@ -1,15 +1,51 @@
 ---
-- name: Install UFW
+- name: Install nftables
   ansible.builtin.package:
-    name: ufw
+    name: nftables
     state: present
 
-- name: Allow SSH
-  community.general.ufw:
-    rule: limit
-    port: ssh
+- name: Create firewall rules
+  ansible.builtin.blockinfile:
+    path: /etc/nftables.conf
+    block: |
+      flush ruleset
+      table inet filter {
+        chain input {
+          type filter hook input priority filter; policy accept;
+        }
 
-- name: Enable UFW
+        chain forward {
+          type filter hook forward priority filter; policy accept;
+        }
+
+        chain output {
+          type filter hook output priority filter; policy accept;
+        }
+      }
+      table ip nat {
+        chain prerouting {
+          type nat hook prerouting priority dstnat; policy accept;
+          tcp dport 57 redirect to :{{pihole.dns_port}}
+          udp dport 57 redirect to :{{pihole.dns_port}}
+          udp dport 67 redirect to :{{pihole.dhcp_port}}
+          tcp dport 80 redirect to :{{pihole.http_port}}
+        }
+      }
+
+- name: Disable ufw immediately (error ignored if ufw is not installed)
   community.general.ufw:
-    state: enabled
-    logging: on
+    state: disabled
+  ignore_errors: yes
+
+- name: Disable ufw from systemd (error ignored if ufw is not installed)
+  ansible.builtin.systemd:
+    name: ufw
+    enabled: no
+    masked: yes
+  ignore_errors: yes
+
+- name: Restart nftables
+  ansible.builtin.systemd:
+    name: nftables
+    enabled: yes
+    state: restarted

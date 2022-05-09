@@ -1,25 +1,34 @@
 ---
-- name: Ensure en_GB.UTF-8 locale exists
-  become: yes
-  ansible.builtin.lineinfile:
-    path: /etc/locale.gen
-    line: en_GB.UTF-8
-    create: yes
-    state: present
+- name: Install packages in preparation for future logins
+  ansible.builtin.package:
+    name: "{{item}}"
+    state: latest
+  loop:
+    - locales
+    - python3-pip
+    - ripgrep
+    - neovim
+    - lnav
+    - bash-completion
+    - ncat
 
-- name: Generate locales
-  become: yes
+- name: Set Neovim to be the editor for 'sudoedit'
+  ansible.builtin.command:
+    cmd: update-alternatives --set editor /usr/bin/nvim
+
+- name: Generate locales (to get rid of 'cannot change locale')
   ansible.builtin.command:
     cmd: "{{item}}"
   loop:
     - locale-gen en_GB.UTF-8
     - update-locale LANG=en_GB.UTF-8
 
-- name: Install packages
-  become: yes
-  ansible.builtin.package:
-    name: "{{item}}"
-    state: present
-  loop:
-    - locales
-    - python3-pip
+- name: Set timezone and update time
+  ansible.builtin.command:
+    cmd: timedatectl set-timezone Europe/Helsinki
+
+- name: Make sure /etc/hosts contain host name with a proper IP address
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: "{{inventory_hostname}}$"
+    line: "{{ansible_all_ipv4_addresses[0]}} {{inventory_hostname}}"

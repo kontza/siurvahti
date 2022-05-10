@@ -9,10 +9,13 @@
       become: yes
     - role: podman
       tags: podman
+      become: yes
     - role: systemd-resolved
       tags: systemd-resolved
+      become: yes
     - role: nft
       tags: nft
       become: yes
     - role: pihole
       tags: pihole
+      become: yes

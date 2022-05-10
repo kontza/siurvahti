@@ -1,13 +1,11 @@
 ---
 - name: Install Podman
-  become: yes
   ansible.builtin.package:
     name: podman
     state: latest
     update_cache: yes
 
 - name: Ensure docker.io is included in image search
-  become: yes
   ansible.builtin.blockinfile:
     path: /etc/containers/registries.conf
     block: |

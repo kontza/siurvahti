@@ -1,6 +1,5 @@
 ---
 - name: Disable DNSStubListener
-  become: yes
   ansible.builtin.lineinfile:
     backup: yes
     path: /etc/systemd/resolved.conf
@@ -8,20 +7,17 @@
     regexp: DNSStubListener *= *yes$
 
 - name: Remove '/etc/resolv.conf'
-  become: yes
   ansible.builtin.file:
     path: /etc/resolv.conf
     state: absent
 
 - name: Link systemd-resolved's into '/etc/resolv.conf'
-  become: yes
   ansible.builtin.file:
     path: /etc/resolv.conf
     src: /run/systemd/resolve/resolv.conf
     state: link
 
 - name: Restart systemd-resolved
-  become: yes
   ansible.builtin.systemd:
     name: systemd-resolved
     state: restarted

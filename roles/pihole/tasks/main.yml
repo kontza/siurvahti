@@ -1,3 +1,13 @@
+# 8 888888888o    8 8888 8 8888        8     ,o888888o.     8 8888         8 8888888888
+# 8 8888    `88.  8 8888 8 8888        8  . 8888     `88.   8 8888         8 8888
+# 8 8888     `88  8 8888 8 8888        8 ,8 8888       `8b  8 8888         8 8888
+# 8 8888     ,88  8 8888 8 8888        8 88 8888        `8b 8 8888         8 8888
+# 8 8888.   ,88'  8 8888 8 8888        8 88 8888         88 8 8888         8 888888888888
+# 8 888888888P'   8 8888 8 8888        8 88 8888         88 8 8888         8 8888
+# 8 8888          8 8888 8 8888888888888 88 8888        ,8P 8 8888         8 8888
+# 8 8888          8 8888 8 8888        8 `8 8888       ,8P  8 8888         8 8888
+# 8 8888          8 8888 8 8888        8  ` 8888     ,88'   8 8888         8 8888
+# 8 8888          8 8888 8 8888        8     `8888888P'     8 888888888888 8 888888888888
 ---
 - name: Add pihole user
   become: yes
@@ -5,8 +15,7 @@
     name: "{{pihole.user}}"
     home: "{{pihole.home}}"
     shell: /bin/false
-  tags:
-    - pihole
+  register: created_user
 
 - name: Create directories for container
   become: yes
@@ -19,23 +28,17 @@
     - etc-pihole
     - etc-dnsmasq.d
     - systemd
-  tags:
-    - pihole
 
 - name: Install ACL in preparation for the next task (enable lingering)
   become: yes
   ansible.builtin.package:
     name: acl
     state: latest
-  tags:
-    - pihole
 
 - name: Enable lingering for {{pihole.user}}
   become: yes
   ansible.builtin.command:
     cmd: loginctl enable-linger {{pihole.user}}
-  tags:
-    - pihole
 
 - name: Create the Pi-hole container
   become: yes
@@ -60,24 +63,18 @@
     cap_add:
       - NET_ADMIN
     generate_systemd:
-      path: "{{pihole.home}}/systemd"
+      path: "{{pihole.home}}/.config/systemd/user/"
   register: creation_result
 
 - name: Extract created systemd unit file's name
   ansible.builtin.set_fact:
-    unit_file: "{{(creation_result['podman_systemd'].keys()|list)[0]}}"
+    unit_name: "{{(creation_result['podman_systemd'].keys()|list)[0]}}"
 
-- name: Ensure the systemd unit file is rootless
+- name: Enable pihole service
   become: yes
   become_user: "{{pihole.user}}"
-  ansible.builtin.blockinfile:
-    path: "{{pihole.home}}/systemd/{{unit_file}}.service"
-    insertafter: ^\[Service\]
-    block: |
-      User={{pihole.user}}
-      Group={{pihole.group}}
-
-- name: Disable lingering for {{pihole.user}}
-  become: yes
-  ansible.builtin.command:
-    cmd: loginctl disable-linger {{pihole.user}}
+  ansible.builtin.systemd:
+    name: "{{unit_name}}"
+    enabled: yes
+    daemon_reload: yes
+    scope: user

@@ -1,3 +1,94 @@
+---
+#
+# 8 8888           b.             8            8 8888           8888888 8888888888
+# 8 8888           888o.          8            8 8888                 8 8888
+# 8 8888           Y88888o.       8            8 8888                 8 8888
+# 8 8888           .`Y888888o.    8            8 8888                 8 8888
+# 8 8888           8o. `Y888888o. 8            8 8888                 8 8888
+# 8 8888           8`Y8o. `Y88888o8            8 8888                 8 8888
+# 8 8888           8   `Y8o. `Y8888            8 8888                 8 8888
+# 8 8888           8      `Y8o. `Y8            8 8888                 8 8888
+# 8 8888           8         `Y8o.`            8 8888                 8 8888
+# 8 8888           8            `Yo            8 8888                 8 8888
+#
+- name: Add user '{{pihole.user}}'
+  ansible.builtin.user:
+    name: "{{pihole.user}}"
+    home: "{{pihole.home}}"
+    shell: /bin/false
+  register: created_user
+
+- name: Install ACL in preparation for the next task (enable lingering)
+  ansible.builtin.package:
+    name: acl
+    state: latest
+
+- name: Enable lingering for {{pihole.user}}
+  ansible.builtin.command:
+    cmd: loginctl enable-linger {{pihole.user}}
+
+- name: Create directories for containers
+  become_user: "{{pihole.user}}"
+  ansible.builtin.file:
+    path: "{{pihole.home}}/{{item}}"
+    state: directory
+    owner: "{{pihole.user}}"
+    group: "{{pihole.group}}"
+  loop:
+    - etc-pihole
+    - etc-dnsmasq.d
+    - etc-unbound
+    - .config/fish
+
+- name: Make sure XDG_RUNTIME_DIR is set for fish shell sessions
+  become_user: "{{pihole.user}}"
+  ansible.builtin.blockinfile:
+    path: "{{pihole.home}}/.config/fish/config.fish"
+    block: |
+      set -x XDG_RUNTIME_DIR /run/user/{{created_user.uid}}
+
+#
+# 8 888888888o       ,o888888o.     8 888888888o.
+# 8 8888    `88.  . 8888     `88.   8 8888    `^888.
+# 8 8888     `88 ,8 8888       `8b  8 8888        `88.
+# 8 8888     ,88 88 8888        `8b 8 8888         `88
+# 8 8888.   ,88' 88 8888         88 8 8888          88
+# 8 888888888P'  88 8888         88 8 8888          88
+# 8 8888         88 8888        ,8P 8 8888         ,88
+# 8 8888         `8 8888       ,8P  8 8888        ,88'
+# 8 8888          ` 8888     ,88'   8 8888    ,o88P'
+# 8 8888             `8888888P'     8 888888888P'
+#
+- name: Create the pod
+  become_user: "{{pihole.user}}"
+  retries: 3
+  containers.podman.podman_pod:
+    name: "{{pihole.pod_name}}"
+    recreate: yes
+    publish:
+      - "{{pihole.dns_port}}:53/tcp"
+      - "{{pihole.dns_port}}:53/udp"
+      - "{{pihole.dhcp_port}}:67/udp"
+      - "{{pihole.http_port}}:80/tcp"
+      - "{{pihole.unbound_port}}:{{pihole.unbound_port}}/tcp"
+      - "{{pihole.unbound_port}}:{{pihole.unbound_port}}/udp"
+    generate_systemd:
+      path: "{{pihole.home}}/.config/systemd/user/"
+  register: creation_result
+
+- name: Extract created systemd unit file's name
+  ansible.builtin.set_fact:
+    unit_name: "{{(creation_result['podman_systemd'].keys()|list)[0]}}"
+
+- name: Enable the service
+  become_user: "{{pihole.user}}"
+  ansible.builtin.systemd:
+    name: "{{unit_name}}"
+    enabled: yes
+    daemon_reload: yes
+    scope: user
+
+#
 # 8 888888888o    8 8888 8 8888        8     ,o888888o.     8 8888         8 8888888888
 # 8 8888    `88.  8 8888 8 8888        8  . 8888     `88.   8 8888         8 8888
 # 8 8888     `88  8 8888 8 8888        8 ,8 8888       `8b  8 8888         8 8888
@@ -8,73 +99,59 @@
 # 8 8888          8 8888 8 8888        8 `8 8888       ,8P  8 8888         8 8888
 # 8 8888          8 8888 8 8888        8  ` 8888     ,88'   8 8888         8 8888
 # 8 8888          8 8888 8 8888        8     `8888888P'     8 888888888888 8 888888888888
----
-- name: Add pihole user
-  become: yes
-  ansible.builtin.user:
-    name: "{{pihole.user}}"
-    home: "{{pihole.home}}"
-    shell: /bin/false
-  register: created_user
-
-- name: Create directories for container
-  become: yes
-  ansible.builtin.file:
-    path: "{{pihole.home}}/{{item}}"
-    state: directory
-    owner: "{{pihole.user}}"
-    group: "{{pihole.group}}"
-  loop:
-    - etc-pihole
-    - etc-dnsmasq.d
-    - systemd
-
-- name: Install ACL in preparation for the next task (enable lingering)
-  become: yes
-  ansible.builtin.package:
-    name: acl
-    state: latest
-
-- name: Enable lingering for {{pihole.user}}
-  become: yes
-  ansible.builtin.command:
-    cmd: loginctl enable-linger {{pihole.user}}
-
+#
 - name: Create the Pi-hole container
-  become: yes
   become_user: "{{pihole.user}}"
   retries: 3
   containers.podman.podman_container:
-    name: pihole
+    name: "{{pihole.user}}"
     image: pihole/pihole
     state: present
     recreate: yes
-    ports:
-      - "10053:53/tcp"
-      - "10053:53/udp"
-      - "10067:67/udp"
-      - "10080:80/tcp"
+    pod: "{{pihole.pod_name}}"
     env:
       TZ: "Europe/Helsinki"
       WEBPASSWORD: "{{pihole.webpassword}}"
     volumes:
       - "{{pihole.home}}/etc-pihole/:/etc/pihole"
       - "{{pihole.home}}/etc-dnsmasq.d:/etc/dnsmasq.d"
-    cap_add:
-      - NET_ADMIN
     generate_systemd:
       path: "{{pihole.home}}/.config/systemd/user/"
-  register: creation_result
+    cap_add:
+      - NET_ADMIN
 
-- name: Extract created systemd unit file's name
-  ansible.builtin.set_fact:
-    unit_name: "{{(creation_result['podman_systemd'].keys()|list)[0]}}"
-
-- name: Enable pihole service
-  become: yes
-  become_user: "{{pihole.user}}"
-  ansible.builtin.systemd:
-    name: "{{unit_name}}"
-    enabled: yes
-    daemon_reload: yes
-    scope: user
+#
+# 8 8888      88 b.             8 8 888888888o   b.             8 8 888888888o.
+# 8 8888      88 888o.          8 8 8888    `88. 888o.          8 8 8888    `^888.
+# 8 8888      88 Y88888o.       8 8 8888     `88 Y88888o.       8 8 8888        `88.
+# 8 8888      88 .`Y888888o.    8 8 8888     ,88 .`Y888888o.    8 8 8888         `88
+# 8 8888      88 8o. `Y888888o. 8 8 8888.   ,88' 8o. `Y888888o. 8 8 8888          88
+# 8 8888      88 8`Y8o. `Y88888o8 8 8888888888   8`Y8o. `Y88888o8 8 8888          88
+# 8 8888      88 8   `Y8o. `Y8888 8 8888    `88. 8   `Y8o. `Y8888 8 8888         ,88
+# ` 8888     ,8P 8      `Y8o. `Y8 8 8888      88 8      `Y8o. `Y8 8 8888        ,88'
+#   8888   ,d8P  8         `Y8o.` 8 8888    ,88' 8         `Y8o.` 8 8888    ,o88P'
+#    `Y88888P'   8            `Yo 8 888888888P   8            `Yo 8 888888888P'
+#
+#### - name: Create entrypoint override
+####   become_user: "{{pihole.user}}"
+####   ansible.builtin.copy:
+####     remote_src: no
+####     src: "files/unbound-entrypoint.sh"
+####     dest: "{{pihole.home}}/{{pihole.pod_name}}.sh"
+####
+#### - name: Create the Unbound container
+####   become_user: "{{pihole.user}}"
+####   retries: 3
+####   containers.podman.podman_container:
+####     name: unbound
+####     image: mvance/unbound
+####     state: present
+####     recreate: yes
+####     pod: "{{pihole.pod_name}}"
+####     entrypoint: "/{{pihole.pod_name}}.sh"
+####     volumes:
+####       - "{{pihole.home}}/{{pihole.pod_name}}.sh:/{{pihole.pod_name}}.sh"
+####    generate_systemd:
+####      path: "{{pihole.home}}/.config/systemd/user/"
+####     cap_add:
+####       - NET_ADMIN

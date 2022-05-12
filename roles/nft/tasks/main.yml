@@ -25,8 +25,8 @@
       table ip nat {
         chain prerouting {
           type nat hook prerouting priority dstnat; policy accept;
-          tcp dport 57 redirect to :{{pihole.dns_port}}
-          udp dport 57 redirect to :{{pihole.dns_port}}
+          tcp dport 53 redirect to :{{pihole.dns_port}}
+          udp dport 53 redirect to :{{pihole.dns_port}}
           udp dport 67 redirect to :{{pihole.dhcp_port}}
           tcp dport 80 redirect to :{{pihole.http_port}}
         }

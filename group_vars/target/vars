@@ -2,7 +2,9 @@ pihole:
     dhcp_port: 10067
     dns_port: 10053
     http_port: 10080
+    unbound_port: 5335
     user: pihole
     group: pihole
     home: /opt/pihole
     webpassword: "{{vault_pihole_webpassword}}"
+    pod_name: pihole-unbound

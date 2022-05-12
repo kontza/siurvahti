@@ -11,6 +11,26 @@
     - lnav
     - bash-completion
     - ncat
+    - fish
+    - tmux
+    - exa
+
+- name: Set fish as the default shell for {{ansible_user}}
+  ansible.builtin.user:
+    shell: /usr/bin/fish
+    name: "{{ansible_user}}"
+
+- name: Make initial fish config
+  ansible.builtin.blockinfile:
+    create: yes
+    path: /etc/fish/conf.d/00-via-ansible.fish
+    block: |
+      # Generated on {{ansible_date_time.date}} at {{ansible_date_time.time}}
+      set -x fish_escape_delay_ms 200
+      set -x EDITOR /usr/bin/nvim
+      function ll
+        exa -laFag $argv
+      end
 
 - name: Set Neovim to be the editor for 'sudoedit'
   ansible.builtin.command:

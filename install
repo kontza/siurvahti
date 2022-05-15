@@ -1,9 +1,10 @@
 #!/bin/sh
+BECOME_SCRIPT=./scripts/become-pass
 if test -z CUSTOM_BECOME;then
-    CUSTOM_BECOME=./scripts/become-pass
+    BECOME_SCRIPT=$CUSTOM_BECOME
 fi
 ansible-playbook \
-    --become-password-file $CUSTOM_BECOME \
+    --become-password-file $BECOME_SCRIPT \
     --vault-password-file ./scripts/vault-pass \
     ./install.yaml \
     $@

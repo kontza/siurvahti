@@ -10,3 +10,4 @@
   loop:
     - "{{inventory_file|basename}}"
     - "{{inventory_hostname}}"
+    - "{{ansible_facts['distribution']}}"

@@ -1,2 +1,2 @@
 #!/bin/sh
-gopass show -n siurvahti/vault
+gopass show -n siurvahti/holvi

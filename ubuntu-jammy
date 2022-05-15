@@ -1,4 +1,4 @@
 target:
   hosts:
     ubuntu-jammy:
-      ansible_user: juruotsa
+      ansible_user: ubuntu

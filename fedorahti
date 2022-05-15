@@ -1,0 +1,5 @@
+target:
+  hosts:
+    fedorahti:
+      ansible_user: juharu
+      net_if: TBD

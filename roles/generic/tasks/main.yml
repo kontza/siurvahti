@@ -13,15 +13,6 @@
     - tmux
     - exa
 
-- name: Install Ubuntu packages in preparation for future logins
-  ansible.builtin.package:
-    name: "{{item}}"
-    state: latest
-  loop:
-    - locales
-    - ncat
-  when: ansible_facts['distribution'] not in rhel_world
-
 - name: Install RHEL-world packages in preparation for future logins
   ansible.builtin.package:
     name: "{{item}}"
@@ -59,20 +50,11 @@
     cmd: dnf install vim-default-editor --allowerasing
   when: ansible_facts['distribution'] in rhel_world
 
-- name: Generate locales (to get rid of 'cannot change locale')
-  tags: est
-  ansible.builtin.command:
-    cmd: "{{item}}"
-  loop:
-    - locale-gen en_GB.UTF-8
-    - update-locale LANG=en_GB.UTF-8
-  when: "{{ansible_facts['distribution']}} not in rhel_world"
-
 - name: Set timezone and update time
   tags: est
   ansible.builtin.command:
     cmd: timedatectl set-timezone Europe/Helsinki
-  when: "{{ansible_facts['distribution']}} not in rhel_world"
+  when: ansible_facts['distribution'] not in rhel_world
 
 - name: Make sure /etc/hosts contain host name with a proper IP address
   tags: est

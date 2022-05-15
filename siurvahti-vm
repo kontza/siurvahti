@@ -2,4 +2,3 @@ target:
   hosts:
     siurvahti-vm:
       ansible_user: juruotsa
-      net_if: TBD

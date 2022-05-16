@@ -11,3 +11,4 @@
     - "{{inventory_file|basename}}"
     - "{{inventory_hostname}}"
     - "{{ansible_facts['distribution']}}"
+    - "{{ansible_default_ipv4.interface}}"

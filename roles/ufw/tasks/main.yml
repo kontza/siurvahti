@@ -1,0 +1,61 @@
+---
+- name: Ensure ufw is installed
+  ansible.builtin.package:
+    name: ufw
+    state: latest
+
+- name: Allow accesses from our local network to this host
+  ansible.builtin.ufw:
+    rule: allow
+    src: 192.168.1.0/24
+    proto: "{{item.proto}}"
+    port: "{{item.port}}"
+    state: enabled
+  loop:
+    - {proto: tcp, port: 22}
+    - {proto: tcp, port: 80}
+    - {proto: tcp, port: 53}
+    - {proto: tcp, port: 67}
+    - {proto: tcp, port: "{{pihole.dhcp_port}}"}
+    - {proto: tcp, port: "{{pihole.dns_port}}"}
+    - {proto: tcp, port: "{{pihole.http_port}}"}
+    - {proto: tcp, port: "{{pihole.unbound_port}}"}
+    - {proto: udp, port: 53}
+    - {proto: udp, port: 67}
+    - {proto: udp, port: "{{pihole.dhcp_port}}"}
+    - {proto: udp, port: "{{pihole.dns_port}}"}
+
+- name: Set default forward policy to 'ACCEPT'
+  ansible.builtin.lineinfile:
+    name: /etc/default/ufw
+    regexp: ^DEFAULT_FORWARD_POLICY
+    line: DEFAULT_FORWARD_POLICY="ACCEPT"
+
+- name: Enable ipv4 forwarding in sysctl
+  ansible.builtin.lineinfile:
+    name: /etc/ufw/sysctl.conf
+    regexp: ^.*net/ipv4/ip_forward
+    line: net/ipv4/ip_forward=1
+
+- name: Enable ipv6 forwarding in sysctl
+  ansible.builtin.lineinfile:
+    name: /etc/ufw/sysctl.conf
+    regexp: ^.*net/ipv6/conf/default/forwarding
+    line: net/ipv6/conf/default/forwarding=1
+
+- name: Set up routing
+  ansible.builtin.blockinfile:
+    name: /etc/ufw/before.rules
+    insertbefore: ^\*filter
+    block: |
+      *nat
+      -A PREROUTING -i {{ansible_default_ipv4.interface}} -p tcp --dport 80 -j DNAT --to :{{pihole.http_port}}
+      -A PREROUTING -i {{ansible_default_ipv4.interface}} -p tcp --dport 53 -j DNAT --to :{{pihole.dns_port}}
+      -A PREROUTING -i {{ansible_default_ipv4.interface}} -p udp --dport 53 -j DNAT --to :{{pihole.dns_port}}
+      -A PREROUTING -i {{ansible_default_ipv4.interface}} -p udp --dport 67 -j DNAT --to :{{pihole.dhcp_port}}
+      -A POSTROUTING -s 192.168.1.0/24 ! -d 192.168.1.0/24 -j MASQUERADE
+      -A OUTPUT -o lo -p tcp --dport 80 -j REDIRECT --to-port {{pihole.http_port}}
+      -A OUTPUT -o lo -p tcp --dport 53 -j REDIRECT --to-port {{pihole.dns_port}}
+      -A OUTPUT -o lo -p udp --dport 53 -j REDIRECT --to-port {{pihole.dns_port}}
+      -A OUTPUT -o lo -p udp --dport 67 -j REDIRECT --to-port {{pihole.dhcp_port}}
+      COMMIT

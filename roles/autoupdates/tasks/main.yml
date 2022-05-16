@@ -1,0 +1,85 @@
+---
+- name: Install packages related to unattended upgrades
+  ansible.builtin.package:
+    name: "{{item}}"
+    state: latest
+  loop:
+    - unattended-upgrades
+    - update-notifier-common
+    - s-nail
+
+- name: Include regular updates in unattended updates
+  ansible.builtin.lineinfile:
+    name: /etc/apt/apt.conf.d/50unattended-upgrades
+    regexp: -updates";$
+    line: '        "${distro_id}:${distro_codename}-updates";'
+
+- name: Enable mail notifications
+  ansible.builtin.lineinfile:
+    name: /etc/apt/apt.conf.d/50unattended-upgrades
+    regexp: Unattended-Upgrade::Mail
+    line: Unattended-Upgrade::Mail "{{notification.recipient}}";
+
+- name: Mail notifications only on error
+  ansible.builtin.lineinfile:
+    name: /etc/apt/apt.conf.d/50unattended-upgrades
+    regexp: Unattended-Upgrade::MailReport
+    line: Unattended-Upgrade::MailReport "only-on-error";
+
+- name: Reboot on updates
+  ansible.builtin.lineinfile:
+    name: /etc/apt/apt.conf.d/50unattended-upgrades
+    regexp: Unattended-Upgrade::Automatic-Reboot
+    line: Unattended-Upgrade::Automatic-Reboot "true";
+
+- name: Reboot on with users logged in
+  ansible.builtin.lineinfile:
+    name: /etc/apt/apt.conf.d/50unattended-upgrades
+    regexp: Unattended-Upgrade::Automatic-Reboot-WithUsers
+    line: Unattended-Upgrade::Automatic-Reboot-WithUsers "true";
+
+- name: Set reboot time
+  ansible.builtin.lineinfile:
+    name: /etc/apt/apt.conf.d/50unattended-upgrades
+    regexp: Unattended-Upgrade::Automatic-Reboot-Time
+    line: Unattended-Upgrade::Automatic-Reboot-Time "03:00";
+
+- name: Set update package list period
+  ansible.builtin.lineinfile:
+    name: /etc/apt/apt.conf.d/20auto-upgrades
+    regexp: Update-Package-Lists
+    line: APT::Periodic::Update-Package-Lists "7";
+
+- name: Set upgradeable package download period
+  ansible.builtin.lineinfile:
+    name: /etc/apt/apt.conf.d/20auto-upgrades
+    regexp: Download-Upgradeable-Packages
+    line: APT::Periodic::Download-Upgradeable-Packages "7";
+
+- name: Set upgradeable package download period
+  ansible.builtin.lineinfile:
+    name: /etc/apt/apt.conf.d/20auto-upgrades
+    regexp: AutocleanInterval
+    line: APT::Periodic::AutocleanInterval "7";
+
+- name: Set upgradeable package download period
+  ansible.builtin.lineinfile:
+    name: /etc/apt/apt.conf.d/20auto-upgrades
+    regexp: Unattended-Upgrade
+    line: APT::Periodic::Unattended-Upgrade "7";
+
+- name: Create mailrc for root
+  ansible.builtin.blockinfile:
+    name: /root/.mailrc
+    create: yes
+    mode: 0400
+    block: |
+      v15-compat
+
+      from="{{inventory_hostname}} Updates <{{notification.sender}}@gmail.com>"
+      sendwait
+      sendcharsets=utf-8,iso-8859-1
+
+      mta=smtp://{{notification.sender}}:{{notification.password}}@smtp.gmail.com:587 \
+      smtp-auth=login \
+      smtp-use-starttls

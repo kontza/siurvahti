@@ -21,3 +21,6 @@
     - role: pihole
       tags: pihole
       become: yes
+    - role: autoupdates
+      tags: autoupdates
+      become: yes

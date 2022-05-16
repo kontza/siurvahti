@@ -42,3 +42,6 @@ Remember that short hostname on a fresh Ubuntu install may point to `127.0.1.1`.
    ```
 1. The above should work.
 1. Most of the steps were adapted from https://ubuntu.com/server/docs/security-firewall. The decisive fix from access from the same host was from an answer to "_Redirect port 80 to 8080 and make it work on local machine_", https://askubuntu.com/a/579540/828214.
+
+# Sending mail
+Kopioi ratkaisu otsonkololta.

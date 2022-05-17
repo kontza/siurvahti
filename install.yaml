@@ -9,6 +9,12 @@
     - role: generic
       tags: generic
       become: yes
+    - role: ssmtp
+      tags: ssmtp
+      become: yes
+    - role: autoupdates
+      tags: autoupdates
+      become: yes
     - role: podman
       tags: podman
       become: yes
@@ -20,7 +26,4 @@
       become: yes
     - role: pihole
       tags: pihole
-      become: yes
-    - role: autoupdates
-      tags: autoupdates
       become: yes

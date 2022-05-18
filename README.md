@@ -2,6 +2,10 @@
 - Target machine has to have SSH installed with running user's SSH key installed.
 - Preferrably a non-minimized Ubuntu installed on the target.
 - Ansible controller must have `containers.podman.podman_container` installed. To check if it is installed, run `$ ansible-galaxy collection list`.
+- You have installed the supporting collection, `kontza.server_setup_helpers`, by running
+   ```
+   ➤ ansible-galaxy collection install -r requirements.yml -U
+   ```
 
 # Handling an OVA
 Just import the OVA-file into VMware. During the import process you can specify the default user's password.

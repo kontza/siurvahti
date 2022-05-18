@@ -6,13 +6,13 @@
   roles:
     - role: est
       tags: est
-    - role: generic
+    - role: kontza.server_setup_helpers.generic
       tags: generic
       become: yes
-    - role: ssmtp
+    - role: kontza.server_setup_helpers.ssmtp
       tags: ssmtp
       become: yes
-    - role: autoupdates
+    - role: kontza.server_setup_helpers.autoupdates
       tags: autoupdates
       become: yes
     - role: podman

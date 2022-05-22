@@ -1,0 +1,3 @@
+pihole:
+  dhcp_active: true
+  domain: torppa.lan

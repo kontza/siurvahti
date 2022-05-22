@@ -1,0 +1,4 @@
+target:
+  hosts:
+    kaivoskarhu:
+      ansible_user: juruotsa

@@ -1,4 +1,0 @@
-target:
-  hosts:
-    fedorahti:
-      ansible_user: juharu

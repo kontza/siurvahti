@@ -1,1 +1,3 @@
-pihole_dhcp_active: false
+pihole:
+  dhcp_active: false
+  domain: siurlahti.lan

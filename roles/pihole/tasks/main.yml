@@ -77,7 +77,6 @@
       - "{{pihole.http_port}}:80/tcp"
       - "{{pihole.unbound_port}}:{{pihole.unbound_port}}/tcp"
       - "{{pihole.unbound_port}}:{{pihole.unbound_port}}/udp"
-    network: slirp4netns:allow_host_loopback=true
     generate_systemd:
       path: "{{pihole.home}}/.config/systemd/user/"
   register: creation_result
@@ -112,12 +111,17 @@
   containers.podman.podman_container:
     name: "{{pihole.user}}"
     image: pihole/pihole
-    state: present
+    state: created
     recreate: yes
     pod: "{{pihole.pod_name}}"
     env:
       TZ: "Europe/Helsinki"
       WEBPASSWORD: "{{pihole.webpassword}}"
+      PIHOLE_DNS: 1.1.1.1
+      DHCP_ACTIVE: "{{pihole.dhcp_active}}"
+      PIHOLE_DOMAIN: "{{pihole.domain}}"
+      DHCP_START:	192.168.1.129
+      DHCP_END: 192.168.1.255
     volumes:
       - "{{pihole.home}}/etc-pihole/:/etc/pihole"
       - "{{pihole.home}}/etc-dnsmasq.d:/etc/dnsmasq.d"
@@ -125,6 +129,19 @@
       path: "{{pihole.home}}/.config/systemd/user/"
     cap_add:
       - NET_ADMIN
+  register: pihole_creation_result
+
+- name: Extract created systemd unit file's name
+  ansible.builtin.set_fact:
+    pihole_unit_name: "{{(pihole_creation_result['podman_systemd'].keys()|list)[0]}}"
+
+- name: Enable the service
+  become_user: "{{pihole.user}}"
+  ansible.builtin.systemd:
+    name: "{{pihole_unit_name}}"
+    enabled: yes
+    daemon_reload: yes
+    scope: user
 
 #
 # 8 8888      88 b.             8 8 888888888o   b.             8 8 888888888o.
@@ -138,26 +155,39 @@
 #   8888   ,d8P  8         `Y8o.` 8 8888    ,88' 8         `Y8o.` 8 8888    ,o88P'
 #    `Y88888P'   8            `Yo 8 888888888P   8            `Yo 8 888888888P'
 #
-#### - name: Create entrypoint override
-####   become_user: "{{pihole.user}}"
-####   ansible.builtin.copy:
-####     remote_src: no
-####     src: "files/unbound-entrypoint.sh"
-####     dest: "{{pihole.home}}/{{pihole.pod_name}}.sh"
-####
-#### - name: Create the Unbound container
-####   become_user: "{{pihole.user}}"
-####   retries: 3
-####   containers.podman.podman_container:
-####     name: unbound
-####     image: mvance/unbound
-####     state: present
-####     recreate: yes
-####     pod: "{{pihole.pod_name}}"
-####     entrypoint: "/{{pihole.pod_name}}.sh"
-####     volumes:
-####       - "{{pihole.home}}/{{pihole.pod_name}}.sh:/{{pihole.pod_name}}.sh"
-####    generate_systemd:
-####      path: "{{pihole.home}}/.config/systemd/user/"
-####     cap_add:
-####       - NET_ADMIN
+# - name: Create entrypoint override
+#   become_user: "{{pihole.user}}"
+#   ansible.builtin.copy:
+#     remote_src: no
+#     src: "files/unbound-entrypoint.sh"
+#     dest: "{{pihole.home}}/{{pihole.pod_name}}.sh"
+
+# - name: Create the Unbound container
+#   become_user: "{{pihole.user}}"
+#   retries: 3
+#   containers.podman.podman_container:
+#     name: unbound
+#     image: mvance/unbound
+#     state: created
+#     recreate: yes
+#     pod: "{{pihole.pod_name}}"
+#     entrypoint: "/{{pihole.pod_name}}.sh"
+#     volumes:
+#       - "{{pihole.home}}/{{pihole.pod_name}}.sh:/{{pihole.pod_name}}.sh"
+#     generate_systemd:
+#       path: "{{pihole.home}}/.config/systemd/user/"
+#     cap_add:
+#       - NET_ADMIN
+#   register: unbound_creation_result
+
+# - name: Extract created systemd unit file's name
+#   ansible.builtin.set_fact:
+#     unbound_unit_name: "{{(unbound_creation_result['podman_systemd'].keys()|list)[0]}}"
+
+# - name: Enable the service
+#   become_user: "{{pihole.user}}"
+#   ansible.builtin.systemd:
+#     name: "{{unbound_unit_name}}"
+#     enabled: yes
+#     daemon_reload: yes
+#     scope: user

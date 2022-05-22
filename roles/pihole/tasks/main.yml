@@ -135,7 +135,7 @@
   ansible.builtin.set_fact:
     pihole_unit_name: "{{(pihole_creation_result['podman_systemd'].keys()|list)[0]}}"
 
-- name: Enable the service
+- name: Enable the service {{pihole_unit_name}}
   become_user: "{{pihole.user}}"
   ansible.builtin.systemd:
     name: "{{pihole_unit_name}}"
@@ -155,39 +155,38 @@
 #   8888   ,d8P  8         `Y8o.` 8 8888    ,88' 8         `Y8o.` 8 8888    ,o88P'
 #    `Y88888P'   8            `Yo 8 888888888P   8            `Yo 8 888888888P'
 #
-# - name: Create entrypoint override
-#   become_user: "{{pihole.user}}"
-#   ansible.builtin.copy:
-#     remote_src: no
-#     src: "files/unbound-entrypoint.sh"
-#     dest: "{{pihole.home}}/{{pihole.pod_name}}.sh"
+- name: Copy unbound conf to target
+  become_user: "{{pihole.user}}"
+  ansible.builtin.copy:
+    remote_src: no
+    src: "files/unbound.conf"
+    dest: "{{pihole.home}}/etc-unbound/unbound.conf"
 
-# - name: Create the Unbound container
-#   become_user: "{{pihole.user}}"
-#   retries: 3
-#   containers.podman.podman_container:
-#     name: unbound
-#     image: mvance/unbound
-#     state: created
-#     recreate: yes
-#     pod: "{{pihole.pod_name}}"
-#     entrypoint: "/{{pihole.pod_name}}.sh"
-#     volumes:
-#       - "{{pihole.home}}/{{pihole.pod_name}}.sh:/{{pihole.pod_name}}.sh"
-#     generate_systemd:
-#       path: "{{pihole.home}}/.config/systemd/user/"
-#     cap_add:
-#       - NET_ADMIN
-#   register: unbound_creation_result
+- name: Create the Unbound container
+  become_user: "{{pihole.user}}"
+  retries: 3
+  containers.podman.podman_container:
+    name: unbound
+    image: klutchell/unbound
+    state: created
+    recreate: yes
+    pod: "{{pihole.pod_name}}"
+    volumes:
+      - "{{pihole.home}}/etc-unbound/:/etc/unbound"
+    generate_systemd:
+      path: "{{pihole.home}}/.config/systemd/user/"
+    cap_add:
+      - NET_ADMIN
+  register: unbound_creation_result
 
-# - name: Extract created systemd unit file's name
-#   ansible.builtin.set_fact:
-#     unbound_unit_name: "{{(unbound_creation_result['podman_systemd'].keys()|list)[0]}}"
+- name: Extract created systemd unit file's name
+  ansible.builtin.set_fact:
+    unbound_unit_name: "{{(unbound_creation_result['podman_systemd'].keys()|list)[0]}}"
 
-# - name: Enable the service
-#   become_user: "{{pihole.user}}"
-#   ansible.builtin.systemd:
-#     name: "{{unbound_unit_name}}"
-#     enabled: yes
-#     daemon_reload: yes
-#     scope: user
+- name: Enable the service {{unbound_unit_name}}
+  become_user: "{{pihole.user}}"
+  ansible.builtin.systemd:
+    name: "{{unbound_unit_name}}"
+    enabled: yes
+    daemon_reload: yes
+    scope: user

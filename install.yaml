@@ -1,8 +1,6 @@
 ---
-- name: Setup Siurvahti
+- name: Setup system
   hosts: target
-  vars:
-    rhel_world: ['Fedora']
   roles:
     - role: est
       tags: est

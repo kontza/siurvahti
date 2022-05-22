@@ -4,6 +4,10 @@
     name: ufw
     state: latest
 
+- name: Disable ufw during setup
+  ansible.builtin.ufw:
+    state: disabled
+
 - name: Allow accesses from our local network to this host
   ansible.builtin.ufw:
     rule: allow
@@ -59,3 +63,7 @@
       -A OUTPUT -o lo -p udp --dport 53 -j REDIRECT --to-port {{pihole.dns_port}}
       -A OUTPUT -o lo -p udp --dport 67 -j REDIRECT --to-port {{pihole.dhcp_port}}
       COMMIT
+
+- name: Enable ufw now that we're done
+  ansible.builtin.ufw:
+    state: enabled

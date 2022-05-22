@@ -1,2 +1,2 @@
 #!/bin/sh
-gopass show -n siurvahti/fedorahti
+gopass show -n siurvahti/kaivoskarhu

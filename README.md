@@ -16,7 +16,7 @@ Remember that short hostname on a fresh Ubuntu install may point to `127.0.1.1`.
 # Steps to get 80 -> 10080 working on localhost, too
 1. Allow SSH from local network:<br>
    ```
-   $ sudo ufw allow proto tcp from 192.168.1.0/24 to any port 22,80,10080
+   $ sudo ufw allow proto tcp from 192.168.1.0/16 to any port 22,80,10080
    ```
 1. Edit `/etc/default/ufw`:
    ```
@@ -32,7 +32,7 @@ Remember that short hostname on a fresh Ubuntu install may point to `127.0.1.1`.
    ```
    *nat
    -A PREROUTING -i ens33 -p tcp --dport 80 -j DNAT --to :10080
-   -A POSTROUTING -s 192.168.1.0/24 ! -d 192.168.1.0/24 -j MASQUERADE
+   -A POSTROUTING -s 192.168.1.0/16 ! -d 192.168.1.0/16 -j MASQUERADE
    -A OUTPUT -o lo -p tcp --dport 80 -j REDIRECT --to-port 10080
    COMMIT
    ```

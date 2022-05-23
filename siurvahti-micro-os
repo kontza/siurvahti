@@ -1,0 +1,4 @@
+target:
+  hosts:
+    siurvahti-micro-os:
+      ansible_user: juruotsa

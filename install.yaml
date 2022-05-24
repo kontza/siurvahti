@@ -10,9 +10,6 @@
     - role: kontza.server_setup_helpers.msmtp
       tags: msmtp
       become: yes
-    - role: kontza.server_setup_helpers.firewalld
-      tags: firewalld
-      become: yes
     - role: firewalld
       tags: firewalld
       become: yes

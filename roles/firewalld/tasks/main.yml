@@ -1,19 +1,13 @@
 ---
-- name: Ensure ufw is installed
-  ansible.builtin.package:
-    name: ufw
-    state: latest
-
-- name: Disable ufw during setup
-  ansible.builtin.ufw:
+- name: Disable firewalld during setup
+  ansible.posix.firewalld:
     state: disabled
 
 - name: Allow accesses from our local network to this host
-  ansible.builtin.ufw:
-    rule: allow
-    src: 192.168.1.0/16
-    proto: "{{item.proto}}"
-    port: "{{item.port}}"
+  ansible.builtin.firewalld:
+    zone: internal
+    port: "{{item.port}}/{{item.proto}}"
+    permanent: yes
     state: enabled
   loop:
     - {proto: tcp, port: 22}

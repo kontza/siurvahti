@@ -3,10 +3,10 @@
   ansible.builtin.systemd:
     name: firewalld
     state: restarted
+    enabled: yes
 
 - name: Allow accesses from our local network to this host
   ansible.builtin.firewalld:
-    zone: internal
     port: "{{item.port}}/{{item.proto}}"
     permanent: yes
     state: enabled
@@ -27,7 +27,6 @@
 - name: Enable port forwarding
   ansible.posix.firewalld:
     rich_rule: rule family={{item.family}} forward-port port={{item.port}} protocol={{item.proto}} to-port={{item.toport}}
-    zone: internal
     permanent: yes
     state: enabled
   loop:
@@ -43,7 +42,6 @@
 - name: Enable masquerade
   ansible.posix.firewalld:
     masquerade: enabled
-    zone: internal
     permanent: yes
     state: enabled
 

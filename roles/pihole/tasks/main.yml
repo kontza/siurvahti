@@ -18,11 +18,6 @@
     shell: /bin/false
   register: created_user
 
-- name: Install ACL in preparation for the next task (enable lingering)
-  ansible.builtin.package:
-    name: acl
-    state: latest
-
 - name: Enable lingering for {{pihole.user}}
   ansible.builtin.command:
     cmd: loginctl enable-linger {{pihole.user}}
@@ -108,27 +103,30 @@
 - name: Create the Pi-hole container
   become_user: "{{pihole.user}}"
   retries: 3
+  tags: ump
   containers.podman.podman_container:
     name: "{{pihole.user}}"
     image: pihole/pihole
     state: created
     recreate: yes
     pod: "{{pihole.pod_name}}"
+    # dns: "{{ansible_all_ipv4_addresses[0]}}"
     env:
       TZ: "Europe/Helsinki"
       WEBPASSWORD: "{{pihole.webpassword}}"
-      PIHOLE_DNS: 1.1.1.1
+      PIHOLE_DNS_: "127.0.0.1#5335"
       DHCP_ACTIVE: "{{pihole.dhcp_active}}"
       PIHOLE_DOMAIN: "{{pihole.domain}}"
       DHCP_START:	192.168.1.129
       DHCP_END: 192.168.1.255
     volumes:
-      - "{{pihole.home}}/etc-pihole/:/etc/pihole"
-      - "{{pihole.home}}/etc-dnsmasq.d:/etc/dnsmasq.d"
+      - "{{pihole.home}}/etc-pihole/:/etc/pihole:z"
+      - "{{pihole.home}}/etc-dnsmasq.d:/etc/dnsmasq.d:z"
     generate_systemd:
       path: "{{pihole.home}}/.config/systemd/user/"
     cap_add:
       - NET_ADMIN
+      - SYS_NICE
   register: pihole_creation_result
 
 - name: Extract created systemd unit file's name
@@ -172,7 +170,7 @@
     recreate: yes
     pod: "{{pihole.pod_name}}"
     volumes:
-      - "{{pihole.home}}/etc-unbound/:/etc/unbound"
+      - "{{pihole.home}}/etc-unbound/:/etc/unbound:z"
     generate_systemd:
       path: "{{pihole.home}}/.config/systemd/user/"
     cap_add:
@@ -190,3 +188,25 @@
     enabled: yes
     daemon_reload: yes
     scope: user
+
+#
+# 8 888888888o.      b.             8    d888888o.
+# 8 8888    `^888.   888o.          8  .`8888:' `88.
+# 8 8888        `88. Y88888o.       8  8.`8888.   Y8
+# 8 8888         `88 .`Y888888o.    8  `8.`8888.
+# 8 8888          88 8o. `Y888888o. 8   `8.`8888.
+# 8 8888          88 8`Y8o. `Y88888o8    `8.`8888.
+# 8 8888         ,88 8   `Y8o. `Y8888     `8.`8888.
+# 8 8888        ,88' 8      `Y8o. `Y8 8b   `8.`8888.
+# 8 8888    ,o88P'   8         `Y8o.` `8b.  ;8.`8888
+# 8 888888888P'      8            `Yo  `Y8888P ,88P'
+#
+# - name: Update DNS server to {{ansible_all_ipv4_addresses[0]}}
+#   ansible.builtin.lineinfile:
+#     regex: NETCONFIG_DNS_STATIC_SERVERS
+#     line: NETCONFIG_DNS_STATIC_SERVERS="{{ansible_all_ipv4_addresses[0]}}"
+#     path: /etc/sysconfig/network/config
+
+# - name: Make DNS change active
+#   ansible.builtin.command:
+#     cmd: netconfig update -f

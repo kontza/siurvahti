@@ -114,7 +114,8 @@
     env:
       TZ: "Europe/Helsinki"
       WEBPASSWORD: "{{pihole.webpassword}}"
-      PIHOLE_DNS_: "127.0.0.1#5335"
+      # PIHOLE_DNS_: "127.0.0.1#5335"
+      PIHOLE_DNS_: 84.200.69.80;84.200.70.40
       DHCP_ACTIVE: "{{pihole.dhcp_active}}"
       PIHOLE_DOMAIN: "{{pihole.domain}}"
       DHCP_START:	192.168.1.129

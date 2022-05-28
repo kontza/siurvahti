@@ -65,6 +65,9 @@
   containers.podman.podman_pod:
     name: "{{pihole.pod_name}}"
     recreate: yes
+    dns:
+      - 127.0.0.1
+      - "{{ansible_all_ipv4_addresses[0]}}"
     publish:
       - "{{pihole.dns_port}}:53/tcp"
       - "{{pihole.dns_port}}:53/udp"
@@ -110,7 +113,6 @@
     state: created
     recreate: yes
     pod: "{{pihole.pod_name}}"
-    # dns: "{{ansible_all_ipv4_addresses[0]}}"
     env:
       TZ: "Europe/Helsinki"
       WEBPASSWORD: "{{pihole.webpassword}}"
@@ -120,14 +122,16 @@
       PIHOLE_DOMAIN: "{{pihole.domain}}"
       DHCP_START:	192.168.1.129
       DHCP_END: 192.168.1.255
+      VIRTUALHOST: "{{ansible_all_ipv4_addresses[0]}}"
     volumes:
       - "{{pihole.home}}/etc-pihole/:/etc/pihole:z"
       - "{{pihole.home}}/etc-dnsmasq.d:/etc/dnsmasq.d:z"
     generate_systemd:
       path: "{{pihole.home}}/.config/systemd/user/"
     cap_add:
-      - NET_ADMIN
-      - SYS_NICE
+      - CAP_NET_RAW
+      - CAP_NET_ADMIN
+      - CAP_SYS_NICE
   register: pihole_creation_result
 
 - name: Extract created systemd unit file's name
@@ -154,41 +158,43 @@
 #   8888   ,d8P  8         `Y8o.` 8 8888    ,88' 8         `Y8o.` 8 8888    ,o88P'
 #    `Y88888P'   8            `Yo 8 888888888P   8            `Yo 8 888888888P'
 #
-- name: Copy unbound conf to target
-  become_user: "{{pihole.user}}"
-  ansible.builtin.copy:
-    remote_src: no
-    src: "files/unbound.conf"
-    dest: "{{pihole.home}}/etc-unbound/unbound.conf"
+# - name: Copy unbound conf to target
+#   become_user: "{{pihole.user}}"
+#   ansible.builtin.copy:
+#     remote_src: no
+#     src: "files/unbound.conf"
+#     dest: "{{pihole.home}}/etc-unbound/unbound.conf"
 
-- name: Create the Unbound container
-  become_user: "{{pihole.user}}"
-  retries: 3
-  containers.podman.podman_container:
-    name: unbound
-    image: klutchell/unbound
-    state: created
-    recreate: yes
-    pod: "{{pihole.pod_name}}"
-    volumes:
-      - "{{pihole.home}}/etc-unbound/:/etc/unbound:z"
-    generate_systemd:
-      path: "{{pihole.home}}/.config/systemd/user/"
-    cap_add:
-      - NET_ADMIN
-  register: unbound_creation_result
+# - name: Create the Unbound container
+#   become_user: "{{pihole.user}}"
+#   retries: 3
+#   containers.podman.podman_container:
+#     name: unbound
+#     image: klutchell/unbound
+#     state: created
+#     recreate: yes
+#     pod: "{{pihole.pod_name}}"
+#     volumes:
+#       - "{{pihole.home}}/etc-unbound/:/etc/unbound:z"
+#     generate_systemd:
+#       path: "{{pihole.home}}/.config/systemd/user/"
+#     cap_add:
+#       - CAP_NET_RAW
+#       - CAP_NET_ADMIN
+#       - CAP_SYS_NICE
+#   register: unbound_creation_result
 
-- name: Extract created systemd unit file's name
-  ansible.builtin.set_fact:
-    unbound_unit_name: "{{(unbound_creation_result['podman_systemd'].keys()|list)[0]}}"
+# - name: Extract created systemd unit file's name
+#   ansible.builtin.set_fact:
+#     unbound_unit_name: "{{(unbound_creation_result['podman_systemd'].keys()|list)[0]}}"
 
-- name: Enable the service {{unbound_unit_name}}
-  become_user: "{{pihole.user}}"
-  ansible.builtin.systemd:
-    name: "{{unbound_unit_name}}"
-    enabled: yes
-    daemon_reload: yes
-    scope: user
+# - name: Enable the service {{unbound_unit_name}}
+#   become_user: "{{pihole.user}}"
+#   ansible.builtin.systemd:
+#     name: "{{unbound_unit_name}}"
+#     enabled: yes
+#     daemon_reload: yes
+#     scope: user
 
 #
 # 8 888888888o.      b.             8    d888888o.

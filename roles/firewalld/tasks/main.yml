@@ -10,6 +10,7 @@
     port: "{{item.port}}/{{item.proto}}"
     permanent: yes
     state: enabled
+    zone: public
   loop:
     - {proto: tcp, port: 22}
     - {proto: tcp, port: 80}
@@ -29,6 +30,7 @@
     rich_rule: rule family={{item.family}} forward-port port={{item.port}} protocol={{item.proto}} to-port={{item.toport}}
     permanent: yes
     state: enabled
+    zone: public
   loop:
     - {family: "ipv4", proto: tcp, port: 80, toport: "{{pihole.http_port}}"}
     - {family: "ipv4", proto: tcp, port: 53, toport: "{{pihole.dns_port}}"}
@@ -44,6 +46,14 @@
     masquerade: enabled
     permanent: yes
     state: enabled
+    zone: public
+
+- name: Bind public zone to {{ansible_default_ipv4.interface}}
+  ansible.posix.firewalld:
+    permanent: yes
+    state: enabled
+    zone: public
+    interface: "{{ansible_default_ipv4.interface}}"
 
 - name: Enable loopback routing
   ansible.builtin.command:

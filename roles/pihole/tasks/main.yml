@@ -109,13 +109,6 @@
 #   8888   ,d8P  8         `Y8o.` 8 8888    ,88' 8         `Y8o.` 8 8888    ,o88P'
 #    `Y88888P'   8            `Yo 8 888888888P   8            `Yo 8 888888888P'
 #
-- name: Copy unbound conf to target
-  become_user: "{{pihole.user}}"
-  ansible.builtin.copy:
-    remote_src: no
-    src: "files/unbound.conf"
-    dest: "{{pihole.home}}/etc-unbound/unbound.conf"
-
 - name: Create the Unbound container
   become_user: "{{pihole.user}}"
   retries: 3

@@ -57,7 +57,6 @@
 - name: Create the Pi-hole container
   become_user: "{{pihole.user}}"
   retries: 3
-  tags: ump
   containers.podman.podman_container:
     name: "{{pihole.user}}"
     image: pihole/pihole

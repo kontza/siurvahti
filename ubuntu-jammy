@@ -1,4 +1,0 @@
-target:
-  hosts:
-    ubuntu-jammy:
-      ansible_user: ubuntu

@@ -4,7 +4,7 @@
 - Ansible controller must have `containers.podman.podman_container` installed. To check if it is installed, run `$ ansible-galaxy collection list`.
 - You have installed the supporting collection, `kontza.server_setup_helpers`, by running
    ```
-   ➤ ansible-galaxy collection install -r requirements.yml -U
+   ➤ make collections
    ```
 
 # Ansible Podman vs CLI

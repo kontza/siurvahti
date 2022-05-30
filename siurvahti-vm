@@ -1,4 +1,0 @@
-target:
-  hosts:
-    siurvahti-vm:
-      ansible_user: juruotsa

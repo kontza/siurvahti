@@ -59,7 +59,7 @@
   retries: 3
   containers.podman.podman_container:
     name: "{{pihole.user}}"
-    image: pihole/pihole
+    image: docker.io/pihole/pihole
     state: created
     recreate: yes
     env:
@@ -82,6 +82,8 @@
       - CAP_NET_RAW
       - CAP_NET_ADMIN
       - CAP_SYS_NICE
+    label:
+      io.containers.autoupdate: registry
   register: pihole_creation_result
 
 - name: Extract created systemd unit file's name
@@ -113,7 +115,7 @@
   retries: 3
   containers.podman.podman_container:
     name: unbound
-    image: mvance/unbound
+    image: docker.io/mvance/unbound
     state: created
     recreate: yes
     ports:
@@ -125,6 +127,8 @@
       - CAP_NET_RAW
       - CAP_NET_ADMIN
       - CAP_SYS_NICE
+    label:
+      io.containers.autoupdate: registry
   register: unbound_creation_result
 
 - name: Extract created systemd unit file's name

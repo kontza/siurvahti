@@ -4,8 +4,13 @@
 - Ansible controller must have `containers.podman.podman_container` installed. To check if it is installed, run `$ ansible-galaxy collection list`.
 - You have installed the supporting collection, `kontza.server_setup_helpers`, by running
    ```
-   ➤ ansible-galaxy collection install -r requirements.yml -U
+   ➤ make collections
    ```
+
+# Ansible Podman vs CLI
+When creating a pod and a container via CLI, and generating systemd unit files for those, Pi-hole works.
+For some reason, when created via Ansible, they don't work. To be precise, they start up, but don't respond to DNS queries from the outside.
+Perhaps I should raise an issue with the Ansible Podman team. At least just to get an answer as to why this happens.
 
 # Handling an OVA
 Just import the OVA-file into VMware. During the import process you can specify the default user's password.

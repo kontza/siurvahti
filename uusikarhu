@@ -1,4 +1,4 @@
 target:
   hosts:
-    siurvahti-vm:
+    uusikarhu:
       ansible_user: juruotsa

@@ -1,0 +1,69 @@
+---
+- name: Enable firewalld during setup
+  ansible.builtin.systemd:
+    name: firewalld
+    state: restarted
+    enabled: yes
+
+- name: Allow accesses from our local network to this host
+  ansible.builtin.firewalld:
+    port: "{{item.port}}/{{item.proto}}"
+    permanent: yes
+    state: enabled
+    zone: public
+  loop:
+    - {proto: tcp, port: 22}
+    - {proto: tcp, port: 80}
+    - {proto: tcp, port: 53}
+    - {proto: tcp, port: 67}
+    - {proto: tcp, port: "{{pihole.dhcp_port}}"}
+    - {proto: tcp, port: "{{pihole.dns_port}}"}
+    - {proto: tcp, port: "{{pihole.http_port}}"}
+    - {proto: tcp, port: "{{pihole.unbound_port}}"}
+    - {proto: udp, port: 53}
+    - {proto: udp, port: 67}
+    - {proto: udp, port: "{{pihole.dhcp_port}}"}
+    - {proto: udp, port: "{{pihole.dns_port}}"}
+
+- name: Enable port forwarding
+  ansible.posix.firewalld:
+    rich_rule: rule family={{item.family}} forward-port port={{item.port}} protocol={{item.proto}} to-port={{item.toport}}
+    permanent: yes
+    state: enabled
+    zone: public
+  loop:
+    - {family: "ipv4", proto: tcp, port: 80, toport: "{{pihole.http_port}}"}
+    - {family: "ipv4", proto: tcp, port: 53, toport: "{{pihole.dns_port}}"}
+    - {family: "ipv4", proto: udp, port: 53, toport: "{{pihole.dns_port}}"}
+    - {family: "ipv4", proto: udp, port: 67, toport: "{{pihole.dhcp_port}}"}
+    - {family: "ipv6", proto: tcp, port: 80, toport: "{{pihole.http_port}}"}
+    - {family: "ipv6", proto: tcp, port: 53, toport: "{{pihole.dns_port}}"}
+    - {family: "ipv6", proto: udp, port: 53, toport: "{{pihole.dns_port}}"}
+    - {family: "ipv6", proto: udp, port: 67, toport: "{{pihole.dhcp_port}}"}
+
+- name: Enable masquerade
+  ansible.posix.firewalld:
+    masquerade: enabled
+    permanent: yes
+    state: enabled
+    zone: public
+
+- name: Bind public zone to {{ansible_default_ipv4.interface}}
+  ansible.posix.firewalld:
+    permanent: yes
+    state: enabled
+    zone: public
+    interface: "{{ansible_default_ipv4.interface}}"
+
+- name: Enable loopback routing
+  ansible.builtin.command:
+    cmd: firewall-cmd --permanent --direct --add-rule {{item.family}} nat OUTPUT 0 -p {{item.proto}} -o lo --dport {{item.port}} -j REDIRECT --to-ports {{item.toport}}
+  loop:
+    - {family: ipv4, proto: tcp, port: 80, toport: "{{pihole.http_port}}"}
+    - {family: ipv4, proto: tcp, port: 53, toport: "{{pihole.dns_port}}"}
+    - {family: ipv4, proto: udp, port: 53, toport: "{{pihole.dns_port}}"}
+    - {family: ipv4, proto: udp, port: 67, toport: "{{pihole.dhcp_port}}"}
+    - {family: ipv6, proto: tcp, port: 80, toport: "{{pihole.http_port}}"}
+    - {family: ipv6, proto: tcp, port: 53, toport: "{{pihole.dns_port}}"}
+    - {family: ipv6, proto: udp, port: 53, toport: "{{pihole.dns_port}}"}
+    - {family: ipv6, proto: udp, port: 67, toport: "{{pihole.dhcp_port}}"}

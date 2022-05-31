@@ -18,11 +18,6 @@
     shell: /bin/false
   register: created_user
 
-- name: Install ACL in preparation for the next task (enable lingering)
-  ansible.builtin.package:
-    name: acl
-    state: latest
-
 - name: Enable lingering for {{pihole.user}}
   ansible.builtin.command:
     cmd: loginctl enable-linger {{pihole.user}}
@@ -31,18 +26,13 @@
   ansible.builtin.command:
     cmd: chown -R {{pihole.user}}:{{pihole.user}} {{pihole.home}}
 
-- name: Create directories for containers
+- name: Create Fish config directory
   become_user: "{{pihole.user}}"
   ansible.builtin.file:
-    path: "{{pihole.home}}/{{item}}"
+    path: "{{pihole.home}}/.config/fish"
     state: directory
     owner: "{{pihole.user}}"
     group: "{{pihole.group}}"
-  loop:
-    - etc-pihole
-    - etc-dnsmasq.d
-    - etc-unbound
-    - .config/fish
 
 - name: Make sure XDG_RUNTIME_DIR is set for fish shell sessions
   become_user: "{{pihole.user}}"
@@ -51,47 +41,6 @@
     path: "{{pihole.home}}/.config/fish/config.fish"
     block: |
       set -x XDG_RUNTIME_DIR /run/user/{{created_user.uid}}
-
-#
-# 8 888888888o       ,o888888o.     8 888888888o.
-# 8 8888    `88.  . 8888     `88.   8 8888    `^888.
-# 8 8888     `88 ,8 8888       `8b  8 8888        `88.
-# 8 8888     ,88 88 8888        `8b 8 8888         `88
-# 8 8888.   ,88' 88 8888         88 8 8888          88
-# 8 888888888P'  88 8888         88 8 8888          88
-# 8 8888         88 8888        ,8P 8 8888         ,88
-# 8 8888         `8 8888       ,8P  8 8888        ,88'
-# 8 8888          ` 8888     ,88'   8 8888    ,o88P'
-# 8 8888             `8888888P'     8 888888888P'
-#
-- name: Create the pod
-  become_user: "{{pihole.user}}"
-  retries: 3
-  containers.podman.podman_pod:
-    name: "{{pihole.pod_name}}"
-    recreate: yes
-    publish:
-      - "{{pihole.dns_port}}:53/tcp"
-      - "{{pihole.dns_port}}:53/udp"
-      - "{{pihole.dhcp_port}}:67/udp"
-      - "{{pihole.http_port}}:80/tcp"
-      - "{{pihole.unbound_port}}:{{pihole.unbound_port}}/tcp"
-      - "{{pihole.unbound_port}}:{{pihole.unbound_port}}/udp"
-    generate_systemd:
-      path: "{{pihole.home}}/.config/systemd/user/"
-  register: creation_result
-
-- name: Extract created systemd unit file's name
-  ansible.builtin.set_fact:
-    unit_name: "{{(creation_result['podman_systemd'].keys()|list)[0]}}"
-
-- name: Enable the service
-  become_user: "{{pihole.user}}"
-  ansible.builtin.systemd:
-    name: "{{unit_name}}"
-    enabled: yes
-    daemon_reload: yes
-    scope: user
 
 #
 # 8 888888888o    8 8888 8 8888        8     ,o888888o.     8 8888         8 8888888888
@@ -113,22 +62,26 @@
     image: pihole/pihole
     state: created
     recreate: yes
-    pod: "{{pihole.pod_name}}"
     env:
       TZ: "Europe/Helsinki"
       WEBPASSWORD: "{{pihole.webpassword}}"
-      PIHOLE_DNS: 1.1.1.1
+      PIHOLE_DNS_: "{{ansible_all_ipv4_addresses[0]}}#5335"
       DHCP_ACTIVE: "{{pihole.dhcp_active}}"
       PIHOLE_DOMAIN: "{{pihole.domain}}"
       DHCP_START:	192.168.1.129
       DHCP_END: 192.168.1.255
-    volumes:
-      - "{{pihole.home}}/etc-pihole/:/etc/pihole"
-      - "{{pihole.home}}/etc-dnsmasq.d:/etc/dnsmasq.d"
+      VIRTUALHOST: "{{ansible_all_ipv4_addresses[0]}}"
+    ports:
+      - "{{pihole.dns_port}}:53/tcp"
+      - "{{pihole.dns_port}}:53/udp"
+      - "{{pihole.dhcp_port}}:67/udp"
+      - "{{pihole.http_port}}:80/tcp"
     generate_systemd:
       path: "{{pihole.home}}/.config/systemd/user/"
     cap_add:
-      - NET_ADMIN
+      - CAP_NET_RAW
+      - CAP_NET_ADMIN
+      - CAP_SYS_NICE
   register: pihole_creation_result
 
 - name: Extract created systemd unit file's name
@@ -155,28 +108,23 @@
 #   8888   ,d8P  8         `Y8o.` 8 8888    ,88' 8         `Y8o.` 8 8888    ,o88P'
 #    `Y88888P'   8            `Yo 8 888888888P   8            `Yo 8 888888888P'
 #
-- name: Copy unbound conf to target
-  become_user: "{{pihole.user}}"
-  ansible.builtin.copy:
-    remote_src: no
-    src: "files/unbound.conf"
-    dest: "{{pihole.home}}/etc-unbound/unbound.conf"
-
 - name: Create the Unbound container
   become_user: "{{pihole.user}}"
   retries: 3
   containers.podman.podman_container:
     name: unbound
-    image: klutchell/unbound
+    image: mvance/unbound
     state: created
     recreate: yes
-    pod: "{{pihole.pod_name}}"
-    volumes:
-      - "{{pihole.home}}/etc-unbound/:/etc/unbound"
+    ports:
+      - "{{pihole.unbound_port}}:53/tcp"
+      - "{{pihole.unbound_port}}:53/udp"
     generate_systemd:
       path: "{{pihole.home}}/.config/systemd/user/"
     cap_add:
-      - NET_ADMIN
+      - CAP_NET_RAW
+      - CAP_NET_ADMIN
+      - CAP_SYS_NICE
   register: unbound_creation_result
 
 - name: Extract created systemd unit file's name

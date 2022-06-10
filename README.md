@@ -1,7 +1,7 @@
 # Prerequisites
 - OpenSUSE MicroOS installed into the target.
 - The target machine has to have SSH installed with running user's SSH key installed.
-- There has to have Python 3 installed.
+- Python 3 must be installed.
 - Ansible controller must have `containers.podman.podman_container` installed. To check if it is installed, run `$ ansible-galaxy collection list`.
 - You have installed the supporting collection, `kontza.server_setup_helpers`, by running
    ```

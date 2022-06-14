@@ -1,0 +1,9 @@
+---
+- name: Add stock users
+  ansible.builtin.user:
+    name: "{{item}}"
+    home: "/raid/home/{{item}}"
+    create_home: false
+    state: present
+    shell: /usr/bin/fish
+  loop: "{{otsonkolo.users|list}}"

@@ -1,0 +1,4 @@
+target:
+  hosts:
+    votsonkolo:
+      ansible_user: juruotsa

@@ -1,0 +1,21 @@
+---
+- name: Setup otsonkolo
+  hosts: target
+  roles:
+    - role: est
+      tags: est
+    - role: kontza.server_setup_helpers.generic
+      tags: generic
+      become: yes
+    - role: kontza.server_setup_helpers.msmtp
+      tags: msmtp
+      become: yes
+    # - role: otsonkolo_packages
+    #   tags: otsonkolo_packages
+    #   become: yes
+    - role: users
+      tags: users
+      become: yes
+    # - role: samba
+    #   tags: samba
+    #   become: yes

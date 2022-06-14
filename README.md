@@ -8,6 +8,22 @@
    ➤ make collections
    ```
 
+# Otsonkolo
+1. [x] Add otsonkolo.users.
+2. [ ] Samba
+3. [ ] VDR
+4. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
+5. [ ] Bitwarden-setti
+   1. [ ] Caddy v2
+   2. [ ] Vaultwarden
+   3. [ ] PostgreSQL
+   4. [ ] Grafana
+6. [ ] Ajastukset:
+   1. [ ] pip-upgrader.service
+   2. [ ] dy-fi-updater.service
+   3. [ ] wol_worker.service
+   5. [ ] dr-who.service
+
 # Ansible Podman vs CLI
 When creating a pod and a container via CLI, and generating systemd unit files for those, Pi-hole works.
 For some reason, when created via Ansible, they don't work. To be precise, they start up, but don't respond to DNS queries from the outside.
@@ -52,6 +68,3 @@ Remember that short hostname on a fresh Ubuntu install may point to `127.0.1.1`.
    ```
 1. The above should work.
 1. Most of the steps were adapted from https://ubuntu.com/server/docs/security-firewall. The decisive fix from access from the same host was from an answer to "_Redirect port 80 to 8080 and make it work on local machine_", https://askubuntu.com/a/579540/828214.
-
-# Sending mail
-Kopioi ratkaisu otsonkololta.

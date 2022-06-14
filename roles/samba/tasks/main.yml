@@ -1,0 +1,12 @@
+---
+- name: Rewrite samba user home to /raid/home
+  ansible.builtin.lineinfile:
+    path: /etc/samba/smb.conf
+    regex: '^\s+path\s*=\s*/home\s*$'
+    line: '  path = /raid/home'
+
+- name: Enable samba on boot
+  ansible.builtin.systemd:
+    name: smb
+    daemon_reload: yes
+    enabled: yes

@@ -10,9 +10,6 @@
     - role: kontza.server_setup_helpers.msmtp
       tags: msmtp
       become: yes
-    # - role: otsonkolo_packages
-    #   tags: otsonkolo_packages
-    #   become: yes
     - role: users
       tags: users
       become: yes

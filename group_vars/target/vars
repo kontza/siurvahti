@@ -8,9 +8,5 @@ pihole:
     home: /opt/pihole
     webpassword: "{{vault_pihole_webpassword}}"
     pod_name: pihole-unbound
-notification:
-    recipient: "{{vault_notification_recipient}}"
-    sender: "{{vault_notification_sender}}"
-    password: "{{vault_notification_sender_password}}"
 otsonkolo:
     users: "{{vault.otsonkolo.users}}"

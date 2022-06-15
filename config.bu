@@ -1,0 +1,46 @@
+variant: fcos
+version: 1.4.0
+passwd:
+  users:
+    - name: core
+      # password_hash: $y$…
+      ssh_authorized_keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCmTG3JW/VV3nY1WXgL3BcS8dwo97wSnjEvQvW9UZJybN9WKksZQdA2HNSvYJsvl/4HWTpnlYkotvK3CxzmmTToqjHWko1dnVIu1bmezKjtlh8hbRzoew3VFIRIieTV4SPh60pN4Z3mzp3C9D44NdVsqO1z90RvNBlQUFTdUDmG7RlZuga9RA+kL26sa40+6apoMvztx9fMresgH6ZPeC2leUhnth37TbLOcMrHIVwW33//+NW9sQJsdBMQSr98w3lDHgLVBFIOTMMqSX+6XoNz2kDlYLJvW7lTgKbHDA19iW1qNi63915cnVn+rJ0Rmn2YMP6XvcrB7qSjt45QKiwcLwzFAj9vkJo7EgHH+f6v0s5PtQZTYXIh9JVb9SrW6q4E4iGQuFuk13mtiCTmcb/4QikDbV89qWm3OrC18nUp+m9T1oHPUsWtQ48jGVHfb7KCqFNTkNzO7dQJvwNv19PZxUtK4/atvsW2iiLG+IkmZYxn0J+3Mm4+B02gEGH+GDk= core@votsonkolo
+storage:
+  files:
+    - path: /etc/hostname
+      mode: 0644
+      contents:
+        inline: votsonkolo
+    - path: /etc/systemd/system/rpm-ostree-install.service.d/rpms.conf
+      mode: 0644
+      contents:
+        inline: |
+          [Service]
+          Environment=RPMS="python3-pip neovim lnav bash-completion fish tmux exa msmtp mailx firewalld nmap-ncat acl"
+  links:
+    - path: /etc/localtime
+      target: ../usr/share/zoneinfo/Europe/Helsinki
+    - path: /etc/alternatives/editor
+      target: /usr/bin/nvim
+      overwrite: true
+      hard: false
+systemd:
+  units:
+    - name: rpm-ostree-install.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Layer additional rpms
+        Wants=network-online.target
+        After=network-online.target
+        # We run before `zincati.service` to avoid conflicting rpm-ostree transactions.
+        Before=zincati.service
+        ConditionPathExists=!/var/lib/%N.stamp
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/usr/bin/rpm-ostree install --apply-live --allow-inactive $RPMS
+        ExecStart=/bin/touch /var/lib/%N.stamp
+        [Install]
+        WantedBy=multi-user.target

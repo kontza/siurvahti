@@ -47,6 +47,11 @@ votsonkolo: PLAYBOOK=otsonkolo.yaml
 votsonkolo: ## Main home server replicant in VMware
 	$(run-ansible)
 
+.PHONY: butane-config
+butane-config:
+	@butane config.bu|gzip -9|base64 -|pbcopy
+	@echo "Config copied to the clipboard."
+
 .PHONY: prepare
 prepare: ## Install required collections
 	ansible-galaxy collection install -r requirements.yml -U

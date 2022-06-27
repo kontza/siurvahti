@@ -1,3 +1,21 @@
+# Read All About It!
+
+## Otsonkolo
+1. Laita USB-tikku A koneeseen.
+2. Luo _combustion_-hakemiston sisältö:
+   ```
+   $ make combustion-otsonkolo TARGET=/usb_tikku_a/combustion
+   ```
+3. Laita `openSUSE-MicroOS.x86_64-ContainerHost-SelfInstall.iso` USB-tikku B:hen.
+4. Boottaa.
+5. Esiasennus on valmis.
+
+Selite: #2 luo _combustion_-hakemistoon `script`-tiedoston ja mm. Ansible-playbookin. Kun kone boottaa, em. `script` asentaa joukon perustyökaluja ja Ansiblen. Noiden asennuksen jälkeen `script` ajaa Ansiblella loput säädöt sisään. Miksi Ansiblella? Sillä on mielestäni helpompi esim. lisätä käyttäjiä salasanoineen järjestelmään.
+
+### Seuraava vaihe
+Muuta _combustion_-hakemiston sisältövaihe käyttämään templateja.
+
+
 # Prerequisites
 - OpenSUSE MicroOS installed into the target.
 - The target machine has to have SSH installed with running user's SSH key installed.

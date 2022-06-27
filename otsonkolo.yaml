@@ -13,6 +13,6 @@
     - role: users
       tags: users
       become: yes
-    # - role: samba
-    #   tags: samba
-    #   become: yes
+    - role: samba
+      tags: samba
+      become: yes

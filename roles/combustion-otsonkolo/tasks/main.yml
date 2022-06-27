@@ -1,0 +1,5 @@
+---
+- name: Copy files into place
+  ansible.builtin.copy:
+    dest: "{{combustion}}"
+    src: "files/"

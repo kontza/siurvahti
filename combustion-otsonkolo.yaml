@@ -1,0 +1,8 @@
+---
+- name: Prepare otsonkolo combustion on localhost
+  hosts: localhost
+  roles:
+    - role: est
+      tags: est
+    - role: combustion-otsonkolo
+      tags: combustion-otsonkolo

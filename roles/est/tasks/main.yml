@@ -12,3 +12,4 @@
     - "{{inventory_hostname}}"
     - "{{ansible_facts['distribution']}}"
     - "{{ansible_default_ipv4.interface}}"
+    - "{{notifications}}"

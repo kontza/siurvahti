@@ -1,3 +1,5 @@
+otsonkolo:
+    users: "{{vault.otsonkolo.users}}"
 pihole:
     dhcp_port: 10067
     dns_port: 10053
@@ -7,6 +9,9 @@ pihole:
     group: pihole
     home: /opt/pihole
     webpassword: "{{vault_pihole_webpassword}}"
-    pod_name: pihole-unbound
-otsonkolo:
-    users: "{{vault.otsonkolo.users}}"
+samba:
+    user: samba
+    group: samba
+    home: /opt/samba
+    port: 10445
+notifications: "{{vault.notifications}}"

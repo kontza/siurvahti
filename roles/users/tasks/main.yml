@@ -6,4 +6,4 @@
     create_home: false
     state: present
     shell: /usr/bin/fish
-  loop: "{{(otsonkolo.users|list)[1:]}}"
+  loop: "{{(otsonkolo.users.keys()|list)[1:]}}"

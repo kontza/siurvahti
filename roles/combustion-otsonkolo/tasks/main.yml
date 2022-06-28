@@ -4,9 +4,15 @@
     dest: "{{combustion}}"
     src: "files/"
 
-- name: Get Vault root token
-  ansible.builtin.set_fact:
-    root_token: "{{lookup('ansible.builtin.env', 'ROOT_TOKEN')}}"
+- name: Generate 'script'
+  ansible.builtin.template:
+    dest: "{{combustion}}/script"
+    src: script.j2
+
+- name: Generate 'finalizer'
+  ansible.builtin.template:
+    dest: "{{combustion}}/finalize.yaml"
+    src: finalize.yaml.j2
 
 - name: Create a client token for this run
   community.hashi_vault.vault_token_create:

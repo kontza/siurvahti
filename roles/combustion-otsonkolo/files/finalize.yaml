@@ -1,9 +1,0 @@
----
-- name: Finalize Combustion
-  hosts: localhost
-  tasks:
-  - name: Create users
-    ansible.builtin.user:
-      name: juruotsa
-      password: $6$yilYoQ1bxGKt1uZA$0iclW1A1Ky20LAkKNnMa20dmNeXP.zQvWz5nIiSwD/VbuwK0g7hWYK2KzZH6mlQk.g6HOtIhaMO2oIpCiqp5l1
-      home: /opt/raid/juruotsa

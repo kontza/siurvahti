@@ -1,0 +1,13 @@
+---
+- name: Finalize Combustion
+  hosts: localhost
+  tasks:
+{% for user, password_hash in otsonkolo.users.items() %}
+{% if 'root' != user %}
+  - name: Create '{{user}}'
+    ansible.builtin.user:
+      name: "{{user}}"
+      password: "{{password_hash}}"
+      home: /opt/raid/{{user}}
+{% endif %}
+{% endfor %}

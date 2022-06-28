@@ -12,7 +12,7 @@ define run-ansible
 endef
 
 define prepare-combustion
-	ansible-playbook -i $(INVENTORY) --vault-password-file scripts/vault-pass --become-password-file $(BECOME_PASS) $(PLAYBOOK) -t$(TAGS) -ecombustion=$(TARGET)
+	ansible-playbook $(PLAYBOOK) -t$(TAGS) -ecombustion=$(TARGET)
 endef
 
 .PHONY: kaivoskarhu
@@ -61,9 +61,7 @@ prepare: ## Install required collections
 	ansible-galaxy collection install -r requirements.yml -U
 
 .PHONE: combustion-otsonkolo
-combustion-otsonkolo: INVENTORY=$@
-combustion-otsonkolo: BECOME_PASS=scripts/home-server-pass
-combustion-otsonkolo: PLAYBOOK=combustion-otsonkolo.yaml
+combustion-otsonkolo: PLAYBOOK=$@.yaml
 combustion-otsonkolo: TARGET=
 combustion-otsonkolo: ## Setup combustion folder for otsonkolo (pass TARGET on command line to specify the target directory)
 	$(prepare-combustion)

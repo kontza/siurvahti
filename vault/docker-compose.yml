@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  vault:
+    image: vault
+    ports:
+      - 8200:8200
+      - 9200:9200
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./vault_data:/vault/file
+      - ./vault.json:/config.json
+    command: vault server -config /config.json

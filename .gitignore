@@ -1,2 +1,4 @@
 jammy-server-cloudimg-amd64.ova
 *.log
+output
+vault/vault_data

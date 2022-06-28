@@ -1,6 +1,8 @@
 ---
 - name: Prepare otsonkolo combustion on localhost
   hosts: localhost
+  vars_files:
+    - "{{playbook_dir}}/group_vars/target/vars"
   roles:
     - role: est
       tags: est

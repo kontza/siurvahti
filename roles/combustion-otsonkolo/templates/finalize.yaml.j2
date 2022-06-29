@@ -11,3 +11,34 @@
       home: /opt/raid/{{user}}
 {% endif %}
 {% endfor %}
+  - name: Make sure root has ~/.ssh
+    ansible.builtin.file:
+      name: /root/.ssh/
+      mode: 0700
+      state: directory
+  - name: Set SSH pub key to root
+    ansible.posix.authorized_key:
+      user: root
+      state: present
+      key: id_rsa.pub
+  - name: Enable SSH
+    ansible.builtin.systemd:
+      name: sshd
+      enabled: yes
+  - name: Install packages
+    ansible.builtin.package:
+      state: present
+      name:
+        - neovim
+        - lnav
+        - bash-completion
+        - fish
+        - tmux
+        - exa
+        - msmtp
+        - msmtp-mta
+        - mailx
+        - firewalld
+        - ncat
+        - acl
+        - samba

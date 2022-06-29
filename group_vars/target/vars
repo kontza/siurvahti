@@ -1,9 +1,9 @@
 notifications:
-  sender: "{{lookup('hashi_vault', 'secret=ansible/data/notification:sender url={{vault.addr}}')}}"
-  sender_password: "{{lookup('hashi_vault', 'secret=ansible/data/notification:sender_password url={{vault.addr}}')}}"
-  receiver: "{{lookup('hashi_vault', 'secret=ansible/data/notification:receiver url={{vault.addr}}')}}"
+  sender: "{{lookup('hashi_vault', 'secret=ansible/data/notification:sender token_validate=False url={{vault.addr}}')}}"
+  sender_password: "{{lookup('hashi_vault', 'secret=ansible/data/notification:sender_password token_validate=False url={{vault.addr}}')}}"
+  receiver: "{{lookup('hashi_vault', 'secret=ansible/data/notification:receiver token_validate=False url={{vault.addr}}')}}"
 otsonkolo:
-  users: "{{lookup('hashi_vault', 'secret=ansible/data/otsonkolo url={{vault.addr}}')}}"
+  users: "{{lookup('hashi_vault', 'secret=ansible/data/otsonkolo token_validate=False url={{vault.addr}}')}}"
 pihole:
   dhcp_port: 10067
   dns_port: 10053
@@ -12,7 +12,7 @@ pihole:
   user: pihole
   group: pihole
   home: /opt/pihole
-  webpassword: "{{lookup('hashi_vault', 'secret=ansible/data/pihole:webpassword url={{vault.addr}}')}}"
+  webpassword: "{{lookup('hashi_vault', 'secret=ansible/data/pihole:webpassword token_validate=False url={{vault.addr}}')}}"
 samba:
   user: samba
   group: samba

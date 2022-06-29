@@ -14,25 +14,7 @@
     dest: "{{combustion}}/finalize.yaml"
     src: finalize.yaml.j2
 
-- name: Create a client token for this run
-  community.hashi_vault.vault_token_create:
-    url: "{{vault.addr}}"
-    ttl: 1h
-    policies:
-      - "{{role_name}}"
-      - default
-    meta:
-      user: "{{role_name}}"
-    display_name: "{{role_name}}"
-  register: token_data
-
-- name: Vault trials
-  ansible.builtin.set_fact:
-    root_password: "{{lookup('hashi_vault', 'secret=combustion-otsonkolo/data/root:password token={{token_data.login.auth.client_token}} url={{vault.addr}}')}}"
-
-- name: Dump
-  debug:
-    var: "{{item}}"
-  loop:
-    - root_password
-    - otsonkolo.users
+- name: Copy SSH public key
+  ansible.builtin.copy:
+    dest: "{{combustion}}"
+    src: "{{lookup('ansible.builtin.env', 'HOME')}}/.ssh/id_rsa.pub"

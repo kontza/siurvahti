@@ -7,7 +7,8 @@ echo 'root:{{otsonkolo.users['root']}}' | chpasswd -e
 # Install packages for Ansible run
 zypper --non-interactive install python3 python3-pip
 pip install ansible
-ansible-playbook finalize.yaml
-# hostnamectl hostname votsonkolo
+export ANSIBLE_LOG_PATH=/root/ansible-run.log
+export ANSIBLE_DISPLAY_ARGS_TO_STDOUT=true
+ansible-playbook finalize.yaml -vv
 # Leave a marker
 echo "Configured with Ansible-powered Combustion" > /etc/issue.d/combustion

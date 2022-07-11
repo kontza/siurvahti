@@ -9,12 +9,11 @@
     dest: "{{combustion}}/script"
     src: script.j2
 
+- name: Copy SSH public key
+  ansible.builtin.set_fact:
+    pubkey: "{{lookup('file', lookup('ansible.builtin.env', 'HOME')+'/.ssh/id_rsa.pub')}}"
+
 - name: Generate 'finalizer'
   ansible.builtin.template:
     dest: "{{combustion}}/finalize.yaml"
     src: finalize.yaml.j2
-
-- name: Copy SSH public key
-  ansible.builtin.copy:
-    dest: "{{combustion}}"
-    src: "{{lookup('ansible.builtin.env', 'HOME')}}/.ssh/id_rsa.pub"

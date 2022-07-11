@@ -4,6 +4,12 @@ notifications:
   receiver: "{{lookup('hashi_vault', 'secret=ansible/data/notification:receiver token_validate=False url={{vault.addr}}')}}"
 otsonkolo:
   users: "{{lookup('hashi_vault', 'secret=ansible/data/otsonkolo token_validate=False url={{vault.addr}}')}}"
+  # Alphabetical order of users from Vault
+  userids:
+    - 1100
+    - 0
+    - 1101
+    - 1102
 pihole:
   dhcp_port: 10067
   dns_port: 10053
@@ -19,4 +25,4 @@ samba:
   home: /opt/samba
   port: 10445
 vault:
-  addr: "http://localhost:8200"
+  addr: "http://otsonkolo:8200"

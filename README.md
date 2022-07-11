@@ -18,6 +18,7 @@ Muuta _combustion_-hakemiston sisältövaihe käyttämään templateja.
 
 # Prerequisites
 - OpenSUSE MicroOS installed into the target.
+- Target has to have a previous RAID array setup with the device name of `/dev/md127`.
 - The target machine has to have SSH installed with running user's SSH key installed.
 - Python 3 must be installed.
 - Ansible controller must have `containers.podman.podman_container` installed. To check if it is installed, run `$ ansible-galaxy collection list`.
@@ -27,20 +28,24 @@ Muuta _combustion_-hakemiston sisältövaihe käyttämään templateja.
    ```
 
 # Otsonkolo
-1. [x] Add otsonkolo.users.
-2. [ ] Samba
-3. [ ] VDR
-4. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
-5. [ ] Bitwarden-setti
+1. [x] Mount RAID.
+2. [ ] Timezone.
+3. [ ] Keymap.
+4. [x] Add otsonkolo.users.
+5. [ ] Samba
+6. [ ] VDR
+7. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
+8. [ ] Bitwarden-setti
    1. [ ] Caddy v2
    2. [ ] Vaultwarden
    3. [ ] PostgreSQL
    4. [ ] Grafana
-6. [ ] Ajastukset:
+9. [ ] Ajastukset:
    1. [ ] pip-upgrader.service
    2. [ ] dy-fi-updater.service
    3. [ ] wol_worker.service
-   5. [ ] dr-who.service
+   4. [ ] dr-who.service
+
 
 # Ansible Podman vs CLI
 When creating a pod and a container via CLI, and generating systemd unit files for those, Pi-hole works.

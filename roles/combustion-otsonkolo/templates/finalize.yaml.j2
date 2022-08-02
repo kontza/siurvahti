@@ -7,11 +7,6 @@
 
   tasks:
 {% raw %}
-  - name: Load raid module into the kernel
-    community.general.modprobe:
-      name: raid1
-      state: present
-
   - name: Make sure {{mdadm_conf|dirname}} exists
     ansible.builtin.file:
       path: "{{mdadm_conf|dirname}}"
@@ -37,43 +32,10 @@
       fstype: ext4
       opts: noatime
       path: /opt/raid
-      state: mounted
+      state: present
       src: "{{raid_device}}"
 {% endraw %}
 
-{% for user, password_hash in otsonkolo.users.items() %}
-{% if 'root' != user %}
-  - name: Create group '{{user}}'
-    ansible.builtin.group:
-      name: {{user}}
-      gid: {{otsonkolo.userids[loop.index0]}}
-      state: present
-
-  - name: Create '{{user}}'
-    ansible.builtin.user:
-      name: {{user}}
-      uid: {{otsonkolo.userids[loop.index0]}}
-      password: "{{password_hash}}"
-      home: /opt/raid/{{user}}
-      shell: /usr/bin/fish
-
-  - name: Make sure '{{user}}' has '.ssh'
-    ansible.builtin.file:
-      path: /opt/raid/{{user}}/.ssh
-      state: directory
-      owner: {{user}}
-      group: {{user}}
-
-  - name: Fix /opt/raid/{{user}} ownership
-    ansible.builtin.file:
-      path: /opt/raid/{{user}}
-      owner: {{user}}
-      group: {{user}}
-      state: directory
-      recurse: yes
-
-{% endif %}
-{% endfor %}
   - name: Make sure root has ~/.ssh
     ansible.builtin.file:
       name: /root/.ssh/
@@ -83,12 +45,6 @@
   - name: Set SSH pub key to root
     ansible.posix.authorized_key:
       user: root
-      state: present
-      key: {{pubkey}}
-
-  - name: Set SSH pub key to juruotsa
-    ansible.posix.authorized_key:
-      user: juruotsa
       state: present
       key: {{pubkey}}
 

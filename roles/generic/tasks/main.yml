@@ -1,0 +1,76 @@
+---
+- name: Install generic tools for future logins (this will take some time)
+  ansible.builtin.package:
+    name: "{{generic_packages}}"
+    state: present
+
+- name: Fetch Lnav
+  ansible.builtin.unarchive:
+    src: https://github.com/tstack/lnav/releases/download/v{{special_packages.lnav}}/lnav-{{special_packages.lnav}}-musl-64bit.zip
+    dest: /tmp
+    remote_src: yes
+
+- name: Install Lnav to /usr/local/bin
+  ansible.builtin.copy:
+    src: /tmp/lnav-{{special_packages.lnav}}/lnav
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: u=rx,g=rx,o=rx
+
+- name: Install Neovim
+  ansible.builtin.apt:
+    deb: "{{special_packages.neovim}}"
+
+- name: Install Fish
+  ansible.builtin.apt:
+    deb: "{{special_packages.fish}}"
+
+- name: Install Tmux
+  ansible.builtin.get_url:
+    url: "{{special_packages.tmux}}"
+    dest: /usr/local/bin
+    mode: u=rx,g=rx,o=rx
+
+- name: Fetch Exa
+  ansible.builtin.unarchive:
+    src: https://github.com/ogham/exa/releases/download/v{{special_packages.exa}}/exa-linux-x86_64-musl-v{{special_packages.exa}}.zip
+    dest: /tmp/
+    remote_src: yes
+
+- name: Install Exa to /usr/local/bin
+  ansible.builtin.copy:
+    src: /tmp/bin/exa
+    dest: /usr/local/bin/
+    remote_src: yes
+    mode: u=rx,g=rx,o=rx
+
+- name: Install Exa Fish completions to /etc/fish/completions
+  ansible.builtin.copy:
+    src: /tmp/completions/exa.fish
+    dest: /etc/fish/completions/
+    remote_src: yes
+    mode: u=rw,g=r,o=r
+
+- name: Set fish as the default shell for {{ansible_user}}
+  ansible.builtin.user:
+    shell: /usr/bin/fish
+    name: "{{ansible_user}}"
+
+- name: Make initial fish config
+  ansible.builtin.blockinfile:
+    create: yes
+    path: /etc/fish/conf.d/00-via-ansible.fish
+    block: |
+      # Generated on {{ansible_date_time.date}} at {{ansible_date_time.time}}
+      set -x fish_escape_delay_ms 200
+      set -x EDITOR /usr/bin/nvim
+      function d
+        exa -laFag $argv
+      end
+
+- name: Make sure /etc/hosts contain host name with a proper IP address
+  tags: est
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: "{{inventory_hostname}}$"
+    line: "{{ansible_all_ipv4_addresses[0]}} {{inventory_hostname}}"

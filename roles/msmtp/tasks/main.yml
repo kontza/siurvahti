@@ -1,0 +1,32 @@
+---
+- name: Install msmtp config
+  ansible.builtin.copy:
+    dest: /etc/msmtprc
+    content: |
+      defaults
+      port 587
+      tls on
+
+      account gmail
+      host smtp.gmail.com
+      auth on
+      from {{notifications.sender}}
+      user {{notifications.sender}}
+      password {{notifications.password}}
+
+      account default: gmail
+      aliases /etc/aliases
+
+- name: Install aliases for msmtp
+  ansible.builtin.copy:
+    dest: /etc/aliases
+    content: |
+      root:{{notifications.recipient}}
+      default:{{notifications.recipient}}
+
+- name: Set full usernames
+  ansible.builtin.command:
+    cmd: chfn -f '{{item}} at {{inventory_hostname}}' {{item}}
+  loop:
+    - root
+    - "{{ansible_user}}"

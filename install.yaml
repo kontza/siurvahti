@@ -4,10 +4,10 @@
   roles:
     - role: est
       tags: est
-    - role: kontza.server_setup_helpers.generic
+    - role: generic
       tags: generic
       become: yes
-    - role: kontza.server_setup_helpers.msmtp
+    - role: msmtp
       tags: msmtp
       become: yes
     - role: firewalld

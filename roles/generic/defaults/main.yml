@@ -1,0 +1,17 @@
+generic_packages:
+  - fuse
+  - python3-pip
+  - msmtp
+  - msmtp-mta
+  - mailutils
+  - ncat
+  - curl
+  # - firewalld
+  # - acl
+
+special_packages:
+  lnav: 0.11.0
+  neovim: https://github.com/neovim/neovim/releases/download/v0.7.2/nvim-linux64.deb
+  fish: https://download.opensuse.org/repositories/shells:/fish:/release:/3/Debian_11/amd64/fish_3.5.1-1_amd64.deb
+  tmux: https://github.com/nelsonenzo/tmux-appimage/releases/download/3.2a/tmux.appimage
+  exa: 0.10.1

@@ -1,5 +1,11 @@
 # Read All About It!
 
+## Debian
+1. Piti asentaa _sudo_.
+2. Ja tietenkin oma tunnus lisätä sudoers-puolelle. `usermod -aG sudo juruotsa`
+3. Curl piti asentaa.
+4. Pi-hole asennettu käyttäen OpenDNS:ää.
+
 ## Otsonkolo
 1. Laita USB-tikku A koneeseen.
 2. Luo _combustion_-hakemiston sisältö:

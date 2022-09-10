@@ -5,6 +5,7 @@
 2. Ja tietenkin oma tunnus lisätä sudoers-puolelle. `usermod -aG sudo juruotsa`
 3. Curl piti asentaa.
 4. Pi-hole asennettu käyttäen OpenDNS:ää.
+5. DNS ei toiminut `siurvahti` osalta. Ei ennenkuin kun vaihdoin Aircardista DHCP:n pi-holelle ja laitoin vielä unbound päälle. Todennäköisesti unboundia ei tarvitse, olennaista lie tuo DHCP pi-holessa.
 
 ## Otsonkolo
 1. Laita USB-tikku A koneeseen.

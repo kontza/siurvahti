@@ -1,44 +1,22 @@
-# Read All About It!
+# Missä mennään?
 
-## Debian
-1. Piti asentaa _sudo_.
-2. Ja tietenkin oma tunnus lisätä sudoers-puolelle. `usermod -aG sudo juruotsa`
-3. Curl piti asentaa.
-4. Pi-hole asennettu käyttäen OpenDNS:ää.
-5. DNS ei toiminut `siurvahti` osalta. Ei ennenkuin kun vaihdoin Aircardista DHCP:n pi-holelle ja laitoin vielä unbound päälle. Todennäköisesti unboundia ei tarvitse, olennaista lie tuo DHCP pi-holessa.
+# Debian alkuvalmistelut
+Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
+1. Asenna _sudo_.
+2. Lisää käytettävä tunnus sudoers-listalle: `sudo usermod -aG sudo $USER`.
+3. Kopioi SSH-avain kyseiselle käyttäjälle, jotta Ansiblella saa otettua yhteyden ilman salasanaa.
+
+# Järjestelmät
+
+## Siurvahti
+
+## Kaivoskarhu
 
 ## Otsonkolo
-1. Laita USB-tikku A koneeseen.
-2. Luo _combustion_-hakemiston sisältö:
-   ```
-   $ make combustion-otsonkolo TARGET=/usb_tikku_a/combustion
-   ```
-3. Laita `openSUSE-MicroOS.x86_64-ContainerHost-SelfInstall.iso` USB-tikku B:hen.
-4. Boottaa.
-5. Esiasennus on valmis.
-
-Selite: #2 luo _combustion_-hakemistoon `script`-tiedoston ja mm. Ansible-playbookin. Kun kone boottaa, em. `script` asentaa joukon perustyökaluja ja Ansiblen. Noiden asennuksen jälkeen `script` ajaa Ansiblella loput säädöt sisään. Miksi Ansiblella? Sillä on mielestäni helpompi esim. lisätä käyttäjiä salasanoineen järjestelmään.
-
-### Seuraava vaihe
-Muuta _combustion_-hakemiston sisältövaihe käyttämään templateja.
-
-
-# Prerequisites
-- OpenSUSE MicroOS installed into the target.
-- Target has to have a previous RAID array setup with the device name of `/dev/md127`.
-- The target machine has to have SSH installed with running user's SSH key installed.
-- Python 3 must be installed.
-- Ansible controller must have `containers.podman.podman_container` installed. To check if it is installed, run `$ ansible-galaxy collection list`.
-- You have installed the supporting collection, `kontza.server_setup_helpers`, by running
-   ```
-   ➤ make collections
-   ```
-
-# Otsonkolo
-1. [x] Mount RAID.
+1. [ ] Mount RAID.
 2. [ ] Timezone.
 3. [ ] Keymap.
-4. [x] Add otsonkolo.users.
+4. [ ] Add otsonkolo.users.
 5. [ ] Samba
 6. [ ] VDR
 7. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible

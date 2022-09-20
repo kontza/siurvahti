@@ -2,9 +2,8 @@
 
 # Debian alkuvalmistelut
 Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
-1. Asenna _sudo_.
-2. Lisää käytettävä tunnus sudoers-listalle: `sudo usermod -aG sudo $USER`.
-3. Kopioi SSH-avain kyseiselle käyttäjälle, jotta Ansiblella saa otettua yhteyden ilman salasanaa.
+1. Kopioi SSH-avain luodulle käyttäjälle, jotta Ansiblella saa otettua yhteyden ilman salasanaa.
+2. Pitääkö `pip install hvac`?
 
 # Järjestelmät
 

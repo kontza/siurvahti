@@ -11,25 +11,31 @@ define run-ansible
 	ansible-playbook -i $(INVENTORY) --vault-password-file scripts/vault-pass --become-password-file $(BECOME_PASS) $(PLAYBOOK) -t$(TAGS)
 endef
 
+define debian-ansible
+	ansible-playbook -i $(INVENTORY) --vault-password-file scripts/vault-pass --become-password-file $(BECOME_PASS) $(PLAYBOOK) --become-method=su -t$(TAGS)
+endef
+
 define prepare-combustion
 	ansible-playbook $(PLAYBOOK) -t$(TAGS) -ecombustion=$(TARGET)
 endef
 
 .PHONY: kaivoskarhu
 kaivoskarhu: INVENTORY=$@
-kaivoskarhu: BECOME_PASS=scripts/$@-pass
+kaivoskarhu: BECOME_PASS=scripts/debian-pass
 kaivoskarhu: ## Home Pi-hole
-	$(run-ansible)
+	$(debian-ansible)
 
 .PHONY: siurvahti
 siurvahti: INVENTORY=$@
+siurvahti: BECOME_PASS=scripts/debian-pass
 siurvahti: ## Countryside Pi-hole
-	$(run-ansible)
+	$(debian-ansible)
 
-.PHONY: siurvahti-micro-os
-siurvahti-micro-os: INVENTORY=$@
-siurvahti-micro-os: ## VMware instance for developing purposes
-	$(run-ansible)
+.PHONY: viurvahti
+viurvahti: INVENTORY=$@
+viurvahti: BECOME_PASS=scripts/debian-pass
+viurvahti: ## Mimic the countryside Pi-hole with VMware
+	$(debian-ansible)
 
 .PHONY: uusikarhu
 uusikarhu: INVENTORY=$@

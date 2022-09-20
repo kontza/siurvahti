@@ -6,6 +6,7 @@ generic_packages:
   - mailutils
   - ncat
   - curl
+  - unzip
   # - firewalld
   # - acl
 

@@ -7,6 +7,8 @@
     - role: generic
       tags: generic
       become: yes
+      environment:
+        PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
     - role: msmtp
       tags: msmtp
       become: yes

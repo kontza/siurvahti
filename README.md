@@ -12,23 +12,38 @@ Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
 ## Kaivoskarhu
 
 ## Otsonkolo
-1. [ ] Mount RAID.
-2. [ ] Timezone.
-3. [ ] Keymap.
-4. [ ] Add otsonkolo.users.
-5. [ ] Samba
-6. [ ] VDR
+1. [x] Gammix jaettu kahtia: _root1_ ja _root2_. Nyt asennus _root1_:lle. Seuraavaksi sitten _root2_:lle. Swapiksi kierrätetty Ubuntun swap.
+1. [x] Piti lisätä `/etc/default/grub` -tiedostoon:
+   ```
+   GRUB_CMDLINE_LINUX="iommu=soft"
+   ```
+2. [x] Mount RAID.
+   - Kopioitu Ubuntun puolelta `/etc/fstab` -tiedostosta olennaiset osat.
+   - Kopioitu Ubuntun puolelta `/etc/mdadm/mdadm.conf` semmoisenaan.
+3. [x] Mount Ubuntun `opt` -> Debianin `opt`. Ks. Debianin `/etc/fstab`.
+3. [x] Add otsonkolo.users.
+4. [x] Samba:
+   - Ubuntusta `/etc/samba/smb.conf`.
+   - Käyttäjät piti lisätä `smbpasswd -a` ja sitten vielä enabloida `smbpasswd -e`.
+5. [ ] VDR
 7. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
-8. [ ] Bitwarden-setti
-   1. [ ] Caddy v2
-   2. [ ] Vaultwarden
-   3. [ ] PostgreSQL
-   4. [ ] Grafana
+8. [x] Bitwarden-setti: piti asentaa `docker` ja `docker-compose`. Ja `sudo` näppärää käyttäjän vaihtoa varten. `$ usermod -aG sudo ...`
+   1. [x] Caddy v2
+   2. [x] Vaultwarden
+   3. [x] PostgreSQL
+      - Piti ajaa _bitwarden_-käyttäjänä:
+        ```
+        $ cd caddy_v2
+        $ find pg_data -type d -exec chmod 0777 {} ';'
+        $ find pg_data -type f -exec chmod 0666 {} ';'
+        ```
+   4. [x] Grafana
 9. [ ] Ajastukset:
-   1. [ ] pip-upgrader.service
-   2. [ ] dy-fi-updater.service
-   3. [ ] wol_worker.service
-   4. [ ] dr-who.service
+   5. [ ] pip-upgrader.service
+   6. [x] dy-fi-updater.{timer,service} (kopioitu suoraan Ubuntusta)
+   7. [ ] wol_worker.service
+   8. [ ] dr-who.service
+
 
 
 # Ansible Podman vs CLI

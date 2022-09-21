@@ -45,10 +45,10 @@ uusikarhu: ## Home development host
 
 .PHONY: otsonkolo
 otsonkolo: INVENTORY=$@
-otsonkolo: BECOME_PASS=scripts/home-server-pass
+otsonkolo: BECOME_PASS=scripts/debian-pass
 otsonkolo: PLAYBOOK=otsonkolo.yaml
 otsonkolo: ## Main home server
-	$(run-ansible)
+	$(debian-ansible)
 
 .PHONY: votsonkolo
 votsonkolo: INVENTORY=$@

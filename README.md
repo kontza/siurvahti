@@ -1,7 +1,9 @@
 # Missä mennään?
 
 # Debian alkuvalmistelut
+
 Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
+
 1. Kopioi SSH-avain luodulle käyttäjälle, jotta Ansiblella saa otettua yhteyden ilman salasanaa.
 2. Pitääkö `pip install hvac`?
 
@@ -12,52 +14,56 @@ Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
 ## Kaivoskarhu
 
 ## Otsonkolo
+
 1. [x] Gammix jaettu kahtia: _root1_ ja _root2_. Nyt asennus _root1_:lle. Seuraavaksi sitten _root2_:lle. Swapiksi kierrätetty Ubuntun swap.
-1. [x] Piti lisätä `/etc/default/grub` -tiedostoon:
+2. [x] Piti lisätä `/etc/default/grub` -tiedostoon:
    ```
    GRUB_CMDLINE_LINUX="iommu=soft"
    ```
-2. [x] Mount RAID.
+3. [x] Mount RAID.
    - Kopioitu Ubuntun puolelta `/etc/fstab` -tiedostosta olennaiset osat.
    - Kopioitu Ubuntun puolelta `/etc/mdadm/mdadm.conf` semmoisenaan.
-3. [x] Mount Ubuntun `opt` -> Debianin `opt`. Ks. Debianin `/etc/fstab`.
-3. [x] Add otsonkolo.users.
-4. [x] Samba:
+4. [x] Mount Ubuntun `opt` -> Debianin `opt`. Ks. Debianin `/etc/fstab`.
+5. [x] Add otsonkolo.users.
+6. [x] Samba:
    - Ubuntusta `/etc/samba/smb.conf`.
    - Käyttäjät piti lisätä `smbpasswd -a` ja sitten vielä enabloida `smbpasswd -e`.
-5. [ ] VDR
-7. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
-8. [x] Bitwarden-setti: piti asentaa `docker` ja `docker-compose`. Ja `sudo` näppärää käyttäjän vaihtoa varten. `$ usermod -aG sudo ...`
-   1. [x] Caddy v2
-   2. [x] Vaultwarden
-   3. [x] PostgreSQL
-      - Piti ajaa _bitwarden_-käyttäjänä:
-        ```
-        $ cd caddy_v2
-        $ find pg_data -type d -exec chmod 0777 {} ';'
-        $ find pg_data -type f -exec chmod 0666 {} ';'
-        ```
-   4. [x] Grafana
-9. [ ] Ajastukset:
-   5. [ ] pip-upgrader.service
-   6. [x] dy-fi-updater.{timer,service} (kopioitu suoraan Ubuntusta)
-   7. [ ] wol_worker.service
-   8. [ ] dr-who.service
-
-
+7. [ ] VDR
+   1. ...
+8. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
+9. [x] Bitwarden-setti: piti asentaa `docker` ja `docker-compose`. Ja `sudo` näppärää käyttäjän vaihtoa varten. `$ usermod -aG sudo ...`
+10. [x] Caddy v2
+11. [x] Vaultwarden
+12. [x] PostgreSQL
+    - Piti ajaa _bitwarden_-käyttäjänä:
+      ```
+      $ cd caddy_v2
+      $ find pg_data -type d -exec chmod 0777 {} ';'
+      $ find pg_data -type f -exec chmod 0666 {} ';'
+      ```
+13. [x] Grafana
+14. [ ] Ajastukset:
+15. [ ] pip-upgrader.service
+16. [x] dy-fi-updater.{timer,service} (kopioitu suoraan Ubuntusta)
+17. [ ] wol_worker.service
+18. [ ] dr-who.service
 
 # Ansible Podman vs CLI
+
 When creating a pod and a container via CLI, and generating systemd unit files for those, Pi-hole works.
 For some reason, when created via Ansible, they don't work. To be precise, they start up, but don't respond to DNS queries from the outside.
 Perhaps I should raise an issue with the Ansible Podman team. At least just to get an answer as to why this happens.
 
 # Handling an OVA
+
 Just import the OVA-file into VMware. During the import process you can specify the default user's password.
 
 # A Hindsight Note About Redirection
+
 Remember that short hostname on a fresh Ubuntu install may point to `127.0.1.1`. This tripped me propertly when I tried to validate my rules. I have a simple TCP-listener app (github.com/kontza/ideal-doodle), that I used to spring up a listener `$ ./ideal-doodle -a shorthostname:10080`. Then I tried `$ echo -n (date)|nc shorthostname:10080`. And wondered why it doesn't work. Then I tried the simple HTTP server from Python3: `$ python3 -mhttp.server --bind shorthostname 10080`, and then I noticed that the full address the server was listening to was `127.0.1.1:10080`. Once that came up, I understood why my rules weren't triggering, and how to remedy that.
 
 # Steps to get 80 -> 10080 working on localhost, too
+
 1. Allow SSH from local network:<br>
    ```
    $ sudo ufw allow proto tcp from 192.168.1.0/16 to any port 22,80,10080
@@ -80,7 +86,7 @@ Remember that short hostname on a fresh Ubuntu install may point to `127.0.1.1`.
    -A OUTPUT -o lo -p tcp --dport 80 -j REDIRECT --to-port 10080
    COMMIT
    ```
-1. Copy *ideal-doodle-linux-amd64* to target host, and start it:
+1. Copy _ideal-doodle-linux-amd64_ to target host, and start it:
    ```
    $ ./ideal-doodle-linux-amd64 -a 0.0.0.0:10080
    ```

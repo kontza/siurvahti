@@ -29,7 +29,7 @@ Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
    - Ubuntusta `/etc/samba/smb.conf`.
    - Käyttäjät piti lisätä `smbpasswd -a` ja sitten vielä enabloida `smbpasswd -e`.
 7. [ ] VDR
-   1. ...
+   1. `apt install vdr vdr-plugin-epgsearch vdr-plugin-live vdr-plugin-streamdev-server`
 8. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
 9. [x] Bitwarden-setti: piti asentaa `docker` ja `docker-compose`. Ja `sudo` näppärää käyttäjän vaihtoa varten. `$ usermod -aG sudo ...`
 10. [x] Caddy v2

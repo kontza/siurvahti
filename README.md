@@ -28,8 +28,14 @@ Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
 6. [x] Samba:
    - Ubuntusta `/etc/samba/smb.conf`.
    - Käyttäjät piti lisätä `smbpasswd -a` ja sitten vielä enabloida `smbpasswd -e`.
-7. [ ] VDR
-   1. `apt install vdr vdr-plugin-epgsearch vdr-plugin-live vdr-plugin-streamdev-server`
+7. [x] VDR
+   - `apt install vdr vdr-plugin-epgsearch vdr-plugin-live vdr-plugin-streamdev-server`
+   - `cp /ubuntu/lib/firmware/dvb-tuner-si2158-a20-01.fw /lib/firmware/`
+   - `cp /ubuntu/lib/firmware/dvb-demod-si2168-a30-01.fw /lib/firmware/`
+   - `cp /ubuntu/var/lib/vdr/channels.conf /var/lib/vdr/channels.conf`
+   - `cp /ubuntu/etc/default/vdr /etc/default/vdr`
+   - `cp /ubuntu/var/lib/vdr/setup.conf /var/lib/vdr/setup.conf`
+   - `nvim /etc/vdr/plugins/streamdevhosts.conf`, varmista `192.168.0.0/16`.
 8. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
 9. [x] Bitwarden-setti: piti asentaa `docker` ja `docker-compose`. Ja `sudo` näppärää käyttäjän vaihtoa varten. `$ usermod -aG sudo ...`
 10. [x] Caddy v2
@@ -42,11 +48,11 @@ Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
       $ find pg_data -type f -exec chmod 0666 {} ';'
       ```
 13. [x] Grafana
-14. [ ] Ajastukset:
-15. [ ] pip-upgrader.service
-16. [x] dy-fi-updater.{timer,service} (kopioitu suoraan Ubuntusta)
-17. [ ] wol_worker.service
-18. [ ] dr-who.service
+14. [x] Ajastukset:
+    - pip-upgrader.service (löytyy Bitbucketista)
+    - dy-fi-updater.{timer,service} (kopioitu suoraan Ubuntusta)
+    - wol_worker.service (löytyy Bitbucketista)
+    - dr-who.service (ei ole enää tallessa)
 
 # Ansible Podman vs CLI
 

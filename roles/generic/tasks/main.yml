@@ -1,7 +1,7 @@
 ---
 - name: Install generic tools for future logins (this will take some time)
   ansible.builtin.package:
-    name: "{{generic_packages}}"
+    name: '{{generic_packages}}'
     state: present
 
 - name: Fetch Lnav
@@ -19,15 +19,15 @@
 
 - name: Install Neovim
   ansible.builtin.apt:
-    deb: "{{special_packages.neovim}}"
+    deb: '{{special_packages.neovim}}'
 
 - name: Install Fish
   ansible.builtin.apt:
-    deb: "{{special_packages.fish}}"
+    deb: '{{special_packages.fish}}'
 
 - name: Install Tmux
   ansible.builtin.get_url:
-    url: "{{special_packages.tmux}}"
+    url: '{{special_packages.tmux}}'
     dest: /usr/local/bin
     mode: u=rx,g=rx,o=rx
 
@@ -54,7 +54,7 @@
 - name: Set fish as the default shell for {{ansible_user}}
   ansible.builtin.user:
     shell: /usr/bin/fish
-    name: "{{ansible_user}}"
+    name: '{{ansible_user}}'
 
 - name: Make initial fish config
   ansible.builtin.blockinfile:
@@ -72,5 +72,5 @@
   tags: est
   ansible.builtin.lineinfile:
     path: /etc/hosts
-    regexp: "{{inventory_hostname}}$"
-    line: "{{ansible_all_ipv4_addresses[0]}} {{inventory_hostname}}"
+    regexp: '{{inventory_hostname}}$'
+    line: '{{ansible_all_ipv4_addresses[0]}} {{inventory_hostname}}'

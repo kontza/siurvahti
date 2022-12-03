@@ -16,19 +16,39 @@ Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
 ## Otsonkolo
 
 1. [x] Gammix jaettu kahtia: _root1_ ja _root2_. Nyt asennus _root1_:lle. Seuraavaksi sitten _root2_:lle. Swapiksi kierrätetty Ubuntun swap.
-2. [x] Piti lisätä `/etc/default/grub` -tiedostoon:
+2. [x] Debian: Piti lisätä `/etc/default/grub` -tiedostoon:
    ```
    GRUB_CMDLINE_LINUX="iommu=soft"
    ```
-3. [x] Mount RAID.
+   Fedora ei tarvinnut tuota.
+3. [x] Debian: Mount RAID.
    - Kopioitu Ubuntun puolelta `/etc/fstab` -tiedostosta olennaiset osat.
-   - Kopioitu Ubuntun puolelta `/etc/mdadm/mdadm.conf` semmoisenaan.
+   - Kopioitu Ubuntun puolelta `/etc/mdadm/mdadm.conf` semmoisenaan; Fedorassa sijainti vain eri: `/etc/mdadm.conf`.
 4. [x] Mount Ubuntun `opt` -> Debianin `opt`. Ks. Debianin `/etc/fstab`.
 5. [x] Add otsonkolo.users.
 6. [x] Samba:
-   - Ubuntusta `/etc/samba/smb.conf`.
-   - Käyttäjät piti lisätä `smbpasswd -a` ja sitten vielä enabloida `smbpasswd -e`.
-7. [x] VDR
+   - Debian:
+      * Ubuntusta `/etc/samba/smb.conf`.
+      * Käyttäjät piti lisätä `smbpasswd -a` ja sitten vielä enabloida `smbpasswd -e`.
+   - Fedora:
+      ```bash
+      ➤ sudo systemctl enable smb --now
+      Created symlink /etc/systemd/system/multi-user.target.wants/smb.service → /usr/lib/systemd/system/smb.service.
+      ➤ firewall-cmd --get-active-zones
+      FedoraServer
+        interfaces: enp5s0
+      ➤ sudo firewall-cmd --permanent --zone FedoraServer --add-service samba
+      success
+      ➤ sudo firewall-cmd --reload
+      ➤ sudo setsebool -P samba_domain_controller on
+      ➤ sudo setsebool -P samba_enable_home_dirs on
+      ➤ sudo setsebool -P samba_export_all_rw on
+      ```
+      * Yo. `systemctl`- ja `firewall-cmd` -osat löytyi suoraan Fedoran ohjeesta, miten Samba asennetaan.
+      * Yo. `setsebool`-rivit taasen asennetun Fedoran `/etc/samba/smb.conf.example` -tiedostosta.
+      * Ubuntusta `/etc/samba/smb.conf`.
+      * Käyttäjät piti lisätä `smbpasswd -a` ja sitten vielä enabloida `smbpasswd -e`.
+7. [ ] VDR
    - `apt install vdr vdr-plugin-epgsearch vdr-plugin-live vdr-plugin-streamdev-server`
    - `cp /ubuntu/lib/firmware/dvb-tuner-si2158-a20-01.fw /lib/firmware/`
    - `cp /ubuntu/lib/firmware/dvb-demod-si2168-a30-01.fw /lib/firmware/`
@@ -38,17 +58,20 @@ Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
    - `nvim /etc/vdr/plugins/streamdevhosts.conf`, varmista `192.168.0.0/16`.
 8. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
 9. [x] Bitwarden-setti: piti asentaa `docker` ja `docker-compose`. Ja `sudo` näppärää käyttäjän vaihtoa varten. `$ usermod -aG sudo ...`
+   - Lisäksi tietenkin aiemmasta asennuksesta kopioida `/etc/systemd/system/caddy-compose*` -tiedostot uuteen asennukseen.
+   - Kaikki volume-määrityksiin piti laittaa `:Z` perään, jotta _SELinux_ saatiin tyytyväiseksi.
 10. [x] Caddy v2
 11. [x] Vaultwarden
 12. [x] PostgreSQL
-    - Piti ajaa _bitwarden_-käyttäjänä:
+   - `docker-compose.yml` piti lisätä `privileged: true`. Ei kaunista, mutta toimii, kunnes tämä setti podmanisoidaan.
+   - Piti ajaa _bitwarden_-käyttäjänä:
       ```
       $ cd caddy_v2
-      $ find pg_data -type d -exec chmod 0777 {} ';'
-      $ find pg_data -type f -exec chmod 0666 {} ';'
+      $ find pg-data -type d -exec chmod 0777 {} ';'
+      $ find pg-data -type f -exec chmod 0666 {} ';'
       ```
-13. [x] Grafana
-14. [x] Ajastukset:
+14. [x] Grafana
+15. [ ] Ajastukset:
     - pip-upgrader.service (löytyy Bitbucketista)
     - dy-fi-updater.{timer,service} (kopioitu suoraan Ubuntusta)
     - wol_worker.service (löytyy Bitbucketista)

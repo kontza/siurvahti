@@ -52,7 +52,7 @@ otsonkolo: ## Main home server
 
 .PHONY: votsonkolo
 votsonkolo: INVENTORY=$@
-votsonkolo: BECOME_PASS=scripts/home-server-pass
+votsonkolo: BECOME_PASS=scripts/new-home-pass
 votsonkolo: PLAYBOOK=otsonkolo.yaml
 votsonkolo: ## Main home server replicant in VMware
 	$(run-ansible)

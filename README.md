@@ -15,7 +15,7 @@ Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
 Fedoraan vaihto:
 1. SELinux piti vaihtaa _permissive_-moodiin.
 2. Palomuuri piti avata: https://docs.pi-hole.net/main/prerequisites/#firewalld
-3. Quadtorppa ei näkynyt, koska se hakee osoitteensa DHCP:llä.
+3. Quadtorppa ei näkynyt, koska se hakee osoitteensa DHCP:llä. Quadtorpan MAC-osoite on: 00:1D:73:A5:26:1C
 
 ## Otsonkolo
 

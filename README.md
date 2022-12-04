@@ -12,6 +12,10 @@ Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
 ## Siurvahti
 
 ## Kaivoskarhu
+Fedoraan vaihto:
+1. SELinux piti vaihtaa _permissive_-moodiin.
+2. Palomuuri piti avata: https://docs.pi-hole.net/main/prerequisites/#firewalld
+3. Quadtorppa ei näkynyt, koska se hakee osoitteensa DHCP:llä.
 
 ## Otsonkolo
 
@@ -70,11 +74,12 @@ Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
       $ find pg-data -type d -exec chmod 0777 {} ';'
       $ find pg-data -type f -exec chmod 0666 {} ';'
       ```
-14. [x] Grafana
-15. [ ] Ajastukset:
+13. [x] Grafana
+14. [x] Ajastukset:
     - pip-upgrader.service (löytyy Bitbucketista)
     - dy-fi-updater.{timer,service} (kopioitu suoraan Ubuntusta)
     - wol_worker.service (löytyy Bitbucketista)
+      * Ei mene ajoon perm denied -ongelman takia. SELinux estänee ajon.
     - dr-who.service (ei ole enää tallessa)
 
 # Ansible Podman vs CLI

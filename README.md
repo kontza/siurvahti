@@ -60,13 +60,14 @@ Fedoraan vaihto:
    - `cp /ubuntu/etc/default/vdr /etc/default/vdr`
    - `cp /ubuntu/var/lib/vdr/setup.conf /var/lib/vdr/setup.conf`
    - `nvim /etc/vdr/plugins/streamdevhosts.conf`, varmista `192.168.0.0/16`.
-8. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
-9. [x] Bitwarden-setti: piti asentaa `docker` ja `docker-compose`. Ja `sudo` näppärää käyttäjän vaihtoa varten. `$ usermod -aG sudo ...`
+8. [ ] TVHeadend; kokeillaan tätä VDR:n sijaan.
+9. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
+10. [x] Bitwarden-setti: piti asentaa `docker` ja `docker-compose`. Ja `sudo` näppärää käyttäjän vaihtoa varten. `$ usermod -aG sudo ...`
    - Lisäksi tietenkin aiemmasta asennuksesta kopioida `/etc/systemd/system/caddy-compose*` -tiedostot uuteen asennukseen.
    - Kaikki volume-määrityksiin piti laittaa `:Z` perään, jotta _SELinux_ saatiin tyytyväiseksi.
-10. [x] Caddy v2
-11. [x] Vaultwarden
-12. [x] PostgreSQL
+11. [x] Caddy v2
+12. [x] Vaultwarden
+13. [x] PostgreSQL
    - `docker-compose.yml` piti lisätä `privileged: true`. Ei kaunista, mutta toimii, kunnes tämä setti podmanisoidaan.
    - Piti ajaa _bitwarden_-käyttäjänä:
       ```
@@ -74,14 +75,14 @@ Fedoraan vaihto:
       $ find pg-data -type d -exec chmod 0777 {} ';'
       $ find pg-data -type f -exec chmod 0666 {} ';'
       ```
-13. [x] Grafana
-14. [x] Ajastukset:
+14. [x] Grafana
+15. [x] Ajastukset:
     - pip-upgrader.service (löytyy Bitbucketista)
     - dy-fi-updater.{timer,service} (kopioitu suoraan Ubuntusta)
     - wol_worker.service (löytyy Bitbucketista)
       * Ei mene ajoon perm denied -ongelman takia. SELinux estänee ajon.
     - dr-who.service (ei ole enää tallessa)
-15. MSMTP
+16. MSMTP
    ```bash
    $ sudo dnf install mailx
    $ sudo dnf install msmtp 0ad-data

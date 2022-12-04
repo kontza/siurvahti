@@ -81,6 +81,30 @@ Fedoraan vaihto:
     - wol_worker.service (löytyy Bitbucketista)
       * Ei mene ajoon perm denied -ongelman takia. SELinux estänee ajon.
     - dr-who.service (ei ole enää tallessa)
+15. MSMTP
+   ```bash
+   $ sudo dnf install mailx
+   $ sudo dnf install msmtp 0ad-data
+   ```
+
+   Lisäksi `/etc/msmtprc`:
+   ```
+   host smtp.gmail.com
+   port 465
+   auth on
+   user quadtorppa@gmail.com
+   password ***APP-PASSWORD-FROM_GOOGLE***
+   tls on
+   tls_starttls off
+   tls_certcheck off
+   syslog LOG_MAIL
+   ```
+
+   Koeajo:
+   ```bash
+   $ date | mail -s koeajo kontza+otsonkolo@gmail.com
+   ```
+   Kannattaa käyttää tuota plus-jatketta, niin voi vastaanottopäässä luoda hyviä filttreitä sen pohjalta.
 
 # Ansible Podman vs CLI
 

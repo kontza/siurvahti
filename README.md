@@ -82,14 +82,22 @@ Fedoraan vaihto:
     - wol_worker.service (löytyy Bitbucketista)
       * Ei mene ajoon perm denied -ongelman takia. SELinux estänee ajon.
     - dr-who.service (ei ole enää tallessa)
-16. DNF Automatic: `sudo dnf install dnf-automatic`
-16. MSMTP
+16. DNF Automatic:
+   ```sh
+   $ sudo dnf install dnf-automatic
+   ```
+
+   * Lisäksi `/etc/dnf/automatic.conf`:
+      * `command_email` -osaan _from_-kenttä = quadtorppa@gmail.com
+      * `command_email` -osaan _to_-kenttä = kontza+HOSTNAME@gmail.com
+18. MSMTP
    ```bash
    $ sudo dnf install mailx
    $ sudo dnf install msmtp 0ad-data
    ```
 
    Lisäksi `/etc/msmtprc`:
+
    ```
    host smtp.gmail.com
    port 465
@@ -104,7 +112,8 @@ Fedoraan vaihto:
    ```
 
    Koeajo:
-   ```bash
+
+   ```sh
    $ date | mail -s koeajo kontza+otsonkolo@gmail.com
    ```
    Kannattaa käyttää tuota plus-jatketta, niin voi vastaanottopäässä luoda hyviä filttereitä sen pohjalta.

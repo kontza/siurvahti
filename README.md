@@ -82,6 +82,7 @@ Fedoraan vaihto:
     - wol_worker.service (löytyy Bitbucketista)
       * Ei mene ajoon perm denied -ongelman takia. SELinux estänee ajon.
     - dr-who.service (ei ole enää tallessa)
+16. DNF Automatic: `sudo dnf install dnf-automatic`
 16. MSMTP
    ```bash
    $ sudo dnf install mailx

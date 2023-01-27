@@ -100,13 +100,14 @@ Fedoraan vaihto:
    tls_starttls off
    tls_certcheck off
    syslog LOG_MAIL
+   from quadtorppa+otsonkolo@gmail.com
    ```
 
    Koeajo:
    ```bash
    $ date | mail -s koeajo kontza+otsonkolo@gmail.com
    ```
-   Kannattaa käyttää tuota plus-jatketta, niin voi vastaanottopäässä luoda hyviä filttreitä sen pohjalta.
+   Kannattaa käyttää tuota plus-jatketta, niin voi vastaanottopäässä luoda hyviä filttereitä sen pohjalta.
 
 # Ansible Podman vs CLI
 

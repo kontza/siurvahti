@@ -90,7 +90,8 @@ Fedoraan vaihto:
    * Lisäksi `/etc/dnf/automatic.conf`:
       * `command_email` -osaan _from_-kenttä = quadtorppa@gmail.com
       * `command_email` -osaan _to_-kenttä = kontza+HOSTNAME@gmail.com
-18. MSMTP
+      * `emit_via = email` (default on _stdio_)
+1. MSMTP
    ```bash
    $ sudo dnf install mailx
    $ sudo dnf install msmtp 0ad-data

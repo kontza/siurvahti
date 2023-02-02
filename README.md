@@ -91,6 +91,7 @@ Fedoraan vaihto:
       * `command_email` -osaan _from_-kenttä = quadtorppa@gmail.com
       * `command_email` -osaan _to_-kenttä = kontza+HOSTNAME@gmail.com
       * `emit_via = command_email` (default on _stdio_)
+      * Lisäksi itse _command_email_ -osasta pitää ottaa `-r {from}` (tms) osio pois.
 1. MSMTP
    ```bash
    $ sudo dnf install mailx

@@ -81,6 +81,8 @@ Fedoraan vaihto:
     - dy-fi-updater.{timer,service} (kopioitu suoraan Ubuntusta)
     - wol_worker.service (löytyy Bitbucketista)
       * Ei mene ajoon perm denied -ongelman takia. SELinux estänee ajon.
+      * [https://linux.die.net/man/8/rsync_selinux](https://linux.die.net/man/8/rsync_selinux)
+      * Yo. sivun vinkkien avulla lähti viimein ajamaan backuppia.
     - dr-who.service (ei ole enää tallessa)
 16. DNF Automatic:
    ```sh

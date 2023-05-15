@@ -13,6 +13,7 @@ Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
 
 ## Kaivoskarhu
 Fedoraan vaihto:
+
 1. SELinux piti vaihtaa _permissive_-moodiin.
 2. Palomuuri piti avata: https://docs.pi-hole.net/main/prerequisites/#firewalld
 3. Quadtorppa ei näkynyt, koska se hakee osoitteensa DHCP:llä. Quadtorpan MAC-osoite on: 00:1D:73:A5:26:1C
@@ -35,48 +36,55 @@ Fedoraan vaihto:
       * Ubuntusta `/etc/samba/smb.conf`.
       * Käyttäjät piti lisätä `smbpasswd -a` ja sitten vielä enabloida `smbpasswd -e`.
    - Fedora:
-      ```bash
-      ➤ sudo systemctl enable smb --now
+
+      ```sh
+      ❯ sudo systemctl enable smb --now
       Created symlink /etc/systemd/system/multi-user.target.wants/smb.service → /usr/lib/systemd/system/smb.service.
-      ➤ firewall-cmd --get-active-zones
+      ❯ firewall-cmd --get-active-zones
       FedoraServer
         interfaces: enp5s0
-      ➤ sudo firewall-cmd --permanent --zone FedoraServer --add-service samba
+      ❯ sudo firewall-cmd --permanent --zone FedoraServer --add-service samba
       success
-      ➤ sudo firewall-cmd --reload
-      ➤ sudo setsebool -P samba_domain_controller on
-      ➤ sudo setsebool -P samba_enable_home_dirs on
-      ➤ sudo setsebool -P samba_export_all_rw on
+      ❯ sudo firewall-cmd --reload
+      ❯ sudo setsebool -P samba_domain_controller on
+      ❯ sudo setsebool -P samba_enable_home_dirs on
+      ❯ sudo setsebool -P samba_export_all_rw on
       ```
       * Yo. `systemctl`- ja `firewall-cmd` -osat löytyi suoraan Fedoran ohjeesta, miten Samba asennetaan.
       * Yo. `setsebool`-rivit taasen asennetun Fedoran `/etc/samba/smb.conf.example` -tiedostosta.
       * Ubuntusta `/etc/samba/smb.conf`.
       * Käyttäjät piti lisätä `smbpasswd -a` ja sitten vielä enabloida `smbpasswd -e`.
-7. [ ] VDR
-   - `apt install vdr vdr-plugin-epgsearch vdr-plugin-live vdr-plugin-streamdev-server`
-   - `cp /ubuntu/lib/firmware/dvb-tuner-si2158-a20-01.fw /lib/firmware/`
-   - `cp /ubuntu/lib/firmware/dvb-demod-si2168-a30-01.fw /lib/firmware/`
-   - `cp /ubuntu/var/lib/vdr/channels.conf /var/lib/vdr/channels.conf`
-   - `cp /ubuntu/etc/default/vdr /etc/default/vdr`
-   - `cp /ubuntu/var/lib/vdr/setup.conf /var/lib/vdr/setup.conf`
-   - `nvim /etc/vdr/plugins/streamdevhosts.conf`, varmista `192.168.0.0/16`.
-8. [ ] TVHeadend; kokeillaan tätä VDR:n sijaan.
-9. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
-10. [x] Bitwarden-setti: piti asentaa `docker` ja `docker-compose`. Ja `sudo` näppärää käyttäjän vaihtoa varten. `$ usermod -aG sudo ...`
+7. [x] TVHeadend; kokeillaan tätä VDR:n sijaan.
+   - Firmis piti kopsata Ubuntun puolelta:
+
+      ```sh
+      ❯ sudo cp /ubuntu/lib/firmware/dvb-demod-si2168-a30-01.fw /lib/firmware/
+      ```
+   - Portit 9981 ja 9982 piti avata.
+
+      ```sh
+      ❯ sudo firewall-cmd --permanent --zone FedoraServer --add-port=9981-9982/tcp
+      ```
+   - Defaulttina tuleva `fi-Vestinkallio` -tiedosto kanavien virittämiselle on niin vanha, ettei se enää pidä paikkaansa. `❯HOME` alta löytyy ajantasaisilla taajuuksilla varustettu versio.
+   - Kanavien viritykseen menee aikaa, josta selviää maltilla odottamalla.
+   - EPG oli alkuun pielessä. Lopulta tajusin, että olin laittanut aikavyöhykkeen _Configuration_ -> _DVB Inputs_ -> _Networks_ -> _Vestinkallio_ -> _Expert Settings_ -> _EIT time offset_ -> _UTC+2_. Se ei siis ole palvelimen aikavyöhyke, vaan kertoo EPG:n aikavyöhykkeestä.
+1. [ ] Paper MC; käytä https://github.com/kontza/minecraft-ansible
+2. [x] Bitwarden-setti: piti asentaa `docker` ja `docker-compose`. Ja `sudo` näppärää käyttäjän vaihtoa varten. `❯ usermod -aG sudo ...`
    - Lisäksi tietenkin aiemmasta asennuksesta kopioida `/etc/systemd/system/caddy-compose*` -tiedostot uuteen asennukseen.
    - Kaikki volume-määrityksiin piti laittaa `:Z` perään, jotta _SELinux_ saatiin tyytyväiseksi.
-11. [x] Caddy v2
-12. [x] Vaultwarden
-13. [x] PostgreSQL
+3. [x] Caddy v2
+4. [x] Vaultwarden
+5. [x] PostgreSQL
    - `docker-compose.yml` piti lisätä `privileged: true`. Ei kaunista, mutta toimii, kunnes tämä setti podmanisoidaan.
    - Piti ajaa _bitwarden_-käyttäjänä:
+
+      ```sh
+      ❯ cd caddy_v2
+      ❯ find pg-data -type d -exec chmod 0777 {} ';'
+      ❯ find pg-data -type f -exec chmod 0666 {} ';'
       ```
-      $ cd caddy_v2
-      $ find pg-data -type d -exec chmod 0777 {} ';'
-      $ find pg-data -type f -exec chmod 0666 {} ';'
-      ```
-14. [x] Grafana
-15. [x] Ajastukset:
+6. [x] Grafana
+7. [x] Ajastukset:
     - pip-upgrader.service (löytyy Bitbucketista)
     - dy-fi-updater.{timer,service} (kopioitu suoraan Ubuntusta)
     - wol_worker.service (löytyy Bitbucketista)
@@ -84,9 +92,9 @@ Fedoraan vaihto:
       * [https://linux.die.net/man/8/rsync_selinux](https://linux.die.net/man/8/rsync_selinux)
       * Yo. sivun vinkkien avulla lähti viimein ajamaan backuppia.
     - dr-who.service (ei ole enää tallessa)
-16. DNF Automatic:
+8. [x] DNF Automatic:
    ```sh
-   $ sudo dnf install dnf-automatic
+   ❯ sudo dnf install dnf-automatic
    ```
 
    * Lisäksi `/etc/dnf/automatic.conf`:
@@ -94,10 +102,10 @@ Fedoraan vaihto:
       * `command_email` -osaan _to_-kenttä = kontza+HOSTNAME@gmail.com
       * `emit_via = command_email` (default on _stdio_)
       * Lisäksi itse _command_email_ -osasta pitää ottaa `-r {from}` (tms) osio pois.
-1. MSMTP
-   ```bash
-   $ sudo dnf install mailx
-   $ sudo dnf install msmtp 0ad-data
+1. [x] MSMTP
+   ```ba
+   ❯ sudo dnf install mailx
+   ❯ sudo dnf install msmtp 0ad-data
    ```
 
    Lisäksi `/etc/msmtprc`:
@@ -118,7 +126,7 @@ Fedoraan vaihto:
    Koeajo:
 
    ```sh
-   $ date | mail -s koeajo kontza+otsonkolo@gmail.com
+   ❯ date | mail -s koeajo kontza+otsonkolo@gmail.com
    ```
    Kannattaa käyttää tuota plus-jatketta, niin voi vastaanottopäässä luoda hyviä filttereitä sen pohjalta.
 
@@ -134,13 +142,29 @@ Just import the OVA-file into VMware. During the import process you can specify 
 
 # A Hindsight Note About Redirection
 
-Remember that short hostname on a fresh Ubuntu install may point to `127.0.1.1`. This tripped me propertly when I tried to validate my rules. I have a simple TCP-listener app (github.com/kontza/ideal-doodle), that I used to spring up a listener `$ ./ideal-doodle -a shorthostname:10080`. Then I tried `$ echo -n (date)|nc shorthostname:10080`. And wondered why it doesn't work. Then I tried the simple HTTP server from Python3: `$ python3 -mhttp.server --bind shorthostname 10080`, and then I noticed that the full address the server was listening to was `127.0.1.1:10080`. Once that came up, I understood why my rules weren't triggering, and how to remedy that.
+Remember that short hostname on a fresh Ubuntu install may point to `127.0.1.1`. This tripped me properly when I tried to validate my rules. I have a simple TCP-listener app (github.com/kontza/ideal-doodle), that I used to spring up a listener:
+
+```sh
+❯ ./ideal-doodle -a shorthostname:10080
+```
+
+Then I tried:
+
+```sh
+❯ echo -n (date)|nc shorthostname:10080
+```
+And wondered why it doesn't work. Then I tried the simple HTTP server from Python3:
+
+```sh
+❯ python3 -mhttp.server --bind shorthostname 10080
+```
+Then I noticed that the full address the server was listening to was `127.0.1.1:10080`. Once that came up, I understood why my rules weren't triggering, and how to remedy that.
 
 # Steps to get 80 -> 10080 working on localhost, too
 
 1. Allow SSH from local network:<br>
-   ```
-   $ sudo ufw allow proto tcp from 192.168.1.0/16 to any port 22,80,10080
+   ```sh
+   ❯ sudo ufw allow proto tcp from 192.168.1.0/16 to any port 22,80,10080
    ```
 1. Edit `/etc/default/ufw`:
    ```
@@ -161,12 +185,14 @@ Remember that short hostname on a fresh Ubuntu install may point to `127.0.1.1`.
    COMMIT
    ```
 1. Copy _ideal-doodle-linux-amd64_ to target host, and start it:
-   ```
-   $ ./ideal-doodle-linux-amd64 -a 0.0.0.0:10080
+
+   ```sh
+   ❯ ./ideal-doodle-linux-amd64 -a 0.0.0.0:10080
    ```
 1. On the target host, in another _tmux_ window, run:
-   ```
-   $ echo -n $(date)|nc -v hostname 80
+
+   ```sh
+   ❯ echo -n (date)|nc -v hostname 80
    ```
 1. The above should work.
 1. Most of the steps were adapted from https://ubuntu.com/server/docs/security-firewall. The decisive fix from access from the same host was from an answer to "_Redirect port 80 to 8080 and make it work on local machine_", https://askubuntu.com/a/579540/828214.

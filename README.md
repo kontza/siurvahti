@@ -9,6 +9,15 @@ Ao. lista päti ainakin Debian 11:n asennuksen aikaan.
 
 # Järjestelmät
 
+## Votsonkolo
+Tämä virtuaalikone mallintakoon _otsonkolon_ asennusta. Pohjana uusi Fedora, jonne OS-levyn lisäksi laitetaan kaksi lisäkovalevyä, jotka mallintavat _otsonkolon_ mountteja `/raid` ja `/ubuntu`. Ohessa huomioita sitä tehdessä.
+
+1. Kun tein bind-mountin `/raid/home` ➡️  `/home`, tuli kirjautuessa "permission denied" -virhe. Kyseessä oli SE Linuxin suojaus ja korjaus siihen oli alla oleva loitsu. Lähde: https://unix.stackexchange.com/a/528183/549617 .
+
+   ```sh
+   ❯ sudo restorecon -R /home
+   ```
+
 ## Siurvahti
 
 ## Kaivoskarhu

@@ -17,6 +17,7 @@ Tämä virtuaalikone mallintakoon _otsonkolon_ asennusta. Pohjana uusi Fedora, j
    ```sh
    ❯ sudo restorecon -R /home
    ```
+1. TVHeadend hakemisto, `/var/lib/tvheadend`, oli lie syytä kopioida jonnekin `/raid` -puolelle ja bind-mountata se paikoilleen fstabissa. Näin tehden saattaisi kenties tulevissa käyttisasennuksissa päästä vähemmällä säätämisellä. Toki sitten kun Digita taas vaihtelee taajuuksia, niin sitten pitää taasen konfata uusiksi.
 
 ## Siurvahti
 

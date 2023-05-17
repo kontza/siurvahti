@@ -19,6 +19,16 @@ Tämä virtuaalikone mallintakoon _otsonkolon_ asennusta. Pohjana uusi Fedora, j
    ```
 1. TVHeadend hakemisto, `/var/lib/tvheadend`, oli lie syytä kopioida jonnekin `/raid` -puolelle ja bind-mountata se paikoilleen fstabissa. Näin tehden saattaisi kenties tulevissa käyttisasennuksissa päästä vähemmällä säätämisellä. Toki sitten kun Digita taas vaihtelee taajuuksia, niin sitten pitää taasen konfata uusiksi.
 
+### Järjestys
+1. Asenna Fedora.
+2. `/etc/fstab` muutokset
+
+   ```
+   UUID=xxx-xxx-... /raid ext4 noatime 0 2
+   /raid/home /home none bind 0 0
+   ```
+3. Jos kotihakemistoon meno kirjautumisen yhteydessä epäonnistuu, on ajettava ym. `restorecon`-komento.
+
 ## Siurvahti
 
 ## Kaivoskarhu

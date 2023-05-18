@@ -29,14 +29,35 @@ Tämä virtuaalikone mallintakoon _otsonkolon_ asennusta. Pohjana uusi Fedora, j
    ```
 3. Jos kotihakemistoon meno kirjautumisen yhteydessä epäonnistuu, on ajettava ym. `restorecon`-komento.
 
-## Siurvahti
-
-## Kaivoskarhu
+## Kaivoskarhu/Siurvahti
 Fedoraan vaihto:
 
 1. SELinux piti vaihtaa _permissive_-moodiin.
-2. Palomuuri piti avata: https://docs.pi-hole.net/main/prerequisites/#firewalld
-3. Quadtorppa ei näkynyt, koska se hakee osoitteensa DHCP:llä. Quadtorpan MAC-osoite on: 00:1D:73:A5:26:1C
+
+   ```
+   # /etc/sysconfig/selinux
+   SELINUX=permissive
+   ```
+1. Palomuuri piti avata: https://docs.pi-hole.net/main/prerequisites/#firewalld
+
+   ```
+   [juruotsa@siurvahti ~]$ sudo firewall-cmd --permanent --zone=FedoraServer --list-all
+   FedoraServer
+      target: default
+      icmp-block-inversion: no
+      interfaces:
+      sources:
+      services: cockpit dhcp dhcpv6 dhcpv6-client dns http ssh
+      ports: 80/tcp 4711/tcp
+      protocols:
+      forward: yes
+      masquerade: no
+      forward-ports:
+      source-ports:
+      icmp-blocks:
+      rich rules:
+   ```
+2. Quadtorppa ei näkynyt, koska se hakee osoitteensa DHCP:llä. Quadtorpan MAC-osoite on: 00:1D:73:A5:26:1C
 
 ## Otsonkolo
 
